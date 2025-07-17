@@ -96,6 +96,7 @@ iOSInjectionProject/
 
 # MCP Configuration with secrets
 Backend/MCP/.mcp.json
+.mcp.json
 
 # macOS
 .DS_Store
