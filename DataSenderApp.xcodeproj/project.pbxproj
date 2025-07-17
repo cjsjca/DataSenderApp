@@ -27,6 +27,7 @@
 		2E0959092E29AD9C001AA629 /* DataSenderApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = DataSenderApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		2E0959162E29AD9E001AA629 /* DataSenderAppTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = DataSenderAppTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		2E0959202E29AD9E001AA629 /* DataSenderAppUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = DataSenderAppUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		2E0959712E29B9A8001AA629 /* DataSenderApp.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; path = DataSenderApp.xcodeproj; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -88,6 +89,13 @@
 				2E0959092E29AD9C001AA629 /* DataSenderApp.app */,
 				2E0959162E29AD9E001AA629 /* DataSenderAppTests.xctest */,
 				2E0959202E29AD9E001AA629 /* DataSenderAppUITests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		2E0959732E29B9A8001AA629 /* Products */ = {
+			isa = PBXGroup;
+			children = (
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -198,6 +206,12 @@
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 2E09590A2E29AD9C001AA629 /* Products */;
 			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = 2E0959732E29B9A8001AA629 /* Products */;
+					ProjectRef = 2E0959712E29B9A8001AA629 /* DataSenderApp.xcodeproj */;
+				},
+			);
 			projectRoot = "";
 			targets = (
 				2E0959082E29AD9C001AA629 /* DataSenderApp */,
