@@ -1,0 +1,30 @@
+// This file configures MCP servers for Claude Code CLI reuse
+// After updating with your credentials, run: claude mcp list
+{
+  "mcpServers": {
+    "supabase": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@supabase/mcp-server-supabase@latest",
+        "--read-only",
+        "--project-ref=xvxyzmldrqewigrrccea"
+      ],
+      "env": {
+        "SUPABASE_ACCESS_TOKEN": "sbp_f6e533073db4d535cd427967e3113c69932da4b9"
+      }
+    },
+    "github": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-github@latest",
+        "--owner=cjsjca",
+        "--repo=DataSenderApp"
+      ],
+      "env": {
+        "GITHUB_TOKEN": "<YOUR_GITHUB_TOKEN>"
+      }
+    }
+  }
+}
