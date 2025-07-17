@@ -29,7 +29,7 @@ DataSenderApp is an iOS 17+ SwiftUI application that provides a seamless interfa
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/yourusername/DataSenderApp.git
+   git clone https://github.com/cjsjca/DataSenderApp.git
    cd DataSenderApp
    ```
 
@@ -477,7 +477,7 @@ We welcome contributions! Please follow these steps:
 
 ### Reporting Issues
 
-Please use the [GitHub Issues](https://github.com/yourusername/DataSenderApp/issues) page to report bugs or request features.
+Please use the [GitHub Issues](https://github.com/cjsjca/DataSenderApp/issues) page to report bugs or request features.
 
 ## License
 
