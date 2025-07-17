@@ -1,0 +1,39 @@
+//
+//  Debug.xcconfig
+//  DataSenderApp
+//
+//  Debug configuration settings
+//
+
+// Swift Compiler - Custom Flags
+SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG
+
+// Swift Compiler - Optimization
+SWIFT_OPTIMIZATION_LEVEL = -Onone
+
+// Deployment
+ENABLE_TESTABILITY = YES
+
+// Signing
+CODE_SIGN_IDENTITY = Apple Development
+CODE_SIGN_STYLE = Automatic
+
+// Build Options
+DEBUG_INFORMATION_FORMAT = dwarf
+ENABLE_NS_ASSERTIONS = YES
+GCC_OPTIMIZATION_LEVEL = 0
+GCC_PREPROCESSOR_DEFINITIONS = DEBUG=1 $(inherited)
+MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE
+ONLY_ACTIVE_ARCH = YES
+
+// API Validation
+ENABLE_STRICT_OBJC_MSGSEND = YES
+
+// Runtime Sanitizers
+ENABLE_ADDRESS_SANITIZER = NO
+ENABLE_THREAD_SANITIZER = NO
+ENABLE_UNDEFINED_BEHAVIOR_SANITIZER = NO
+
+// Custom Settings
+SUPABASE_URL = $(SUPABASE_URL)
+SUPABASE_KEY = $(SUPABASE_KEY)
