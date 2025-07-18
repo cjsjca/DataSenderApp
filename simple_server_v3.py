@@ -102,6 +102,7 @@ class ChatHandler(http.server.SimpleHTTPRequestHandler):
         return super().do_GET()
     
     def do_POST(self):
+        print(f"POST request to: {self.path}", flush=True)
         if self.path == '/chat':
             content_length = int(self.headers['Content-Length'])
             post_data = self.rfile.read(content_length)
