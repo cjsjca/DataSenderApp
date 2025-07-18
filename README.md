@@ -26,8 +26,7 @@ http://localhost:8080/realtime_chat.html
 - `realtime_chat.html` - Browser interface with status indicators
 - `chat_server.py` - Bridge between browser and Claude CLI  
 - `auto_commit.sh` - Git auto-versioning (commits every 5s, pushes every 30min)
-- `quick_send.py` - Send test messages to Supabase
-- `supabase_setup.sql` - Database schema
+- `start_server.sh` - Server launcher
 
 ## iPhone Access
 
@@ -51,7 +50,6 @@ tail -f /tmp/datasenderapp-autocommit.log
 
 - WebSocket/SSE for real-time communication
 - Claude CLI runs as subprocess
-- All text saved to Supabase
 - No authentication (bootstrap phase)
 
 That's it. Simple text streaming.
