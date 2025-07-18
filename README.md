@@ -44,21 +44,27 @@ python3 terminal_chat.py
 2. Navigate to project: `cd ~/Projects/DataSenderApp`
 3. Run: `python3 terminal_chat.py`
 
-#### Option 2: Claude CLI via tmux (Uses Subscription)
+#### Option 2: Claude CLI via tmux (Uses Subscription) ✅ WORKING!
 1. **First time setup** (on Mac Terminal):
    ```bash
    cd ~/Projects/DataSenderApp
    ./claude_tmux.sh start  # Start authenticated session
    ```
 
-2. **From Termius SSH**:
+2. **From Termius SSH on iPhone**:
    ```bash
    cd ~/Projects/DataSenderApp
    ./claude_ssh.sh  # Attaches to existing session
    ```
+   
+   **Important**: The OAuth login DOES work through tmux! When prompted:
+   - It will show a browser URL
+   - Complete the login on any device
+   - The tmux session receives the authentication
+   - Your $250/month subscription is active (no API charges)
 
 3. **Detach without closing**: Press `Ctrl+B` then `D`
-4. **Your subscription remains active** - no API charges!
+4. **Reattach anytime**: Just run `./claude_ssh.sh` again
 
 ### Automatic Versioning System
 
