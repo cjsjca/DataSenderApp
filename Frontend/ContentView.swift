@@ -193,16 +193,20 @@ struct ContentView: View {
         Task {
             do {
                 let data = try Data(contentsOf: url)
-                let key = try await storageManager.uploadFile(data, filename: "recording.m4a", mimeType: "audio/m4a")
+                let key = try await storageManager.uploadAudio(data)
                 await MainActor.run {
                     isUploading = false
                     uploadStatus = "Audio uploaded successfully"
+                    showAlert = true
+                    alertMessage = "Audio uploaded successfully to: \(key)"
                     print("Stored at:", key)
                 }
             } catch {
                 await MainActor.run {
                     isUploading = false
                     uploadStatus = "Failed to upload audio: \(error.localizedDescription)"
+                    showAlert = true
+                    alertMessage = "Failed to upload audio: \(error.localizedDescription)"
                 }
             }
         }
@@ -252,12 +256,16 @@ struct ContentView: View {
                 await MainActor.run {
                     isUploading = false
                     uploadStatus = "File uploaded successfully"
+                    showAlert = true
+                    alertMessage = "File uploaded successfully to: \(key)"
                     print("Stored at:", key)
                 }
             } catch {
                 await MainActor.run {
                     isUploading = false
                     uploadStatus = "Failed to upload file: \(error.localizedDescription)"
+                    showAlert = true
+                    alertMessage = "Failed to upload file: \(error.localizedDescription)"
                 }
             }
         }

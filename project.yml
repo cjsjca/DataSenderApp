@@ -106,6 +106,8 @@ targets:
     deploymentTarget: "18.5"
     sources:
       - path: DataSenderAppUITests
+        includes:
+          - "**/*.swift"
     dependencies:
       - target: DataSenderApp
     settings:

@@ -37,4 +37,9 @@ class StorageManager: ObservableObject {
         let filename = "photo-\(UUID().uuidString).jpg"
         return try await uploadFile(imageData, filename: filename, mimeType: "image/jpeg")
     }
+    
+    func uploadAudio(_ audioData: Data) async throws -> String {
+        let filename = "audio-\(UUID().uuidString).m4a"
+        return try await uploadFile(audioData, filename: filename, mimeType: "audio/m4a")
+    }
 }
