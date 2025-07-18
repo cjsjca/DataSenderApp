@@ -13,7 +13,7 @@ DataSenderApp is a SwiftUI iOS application that provides a seamless interface fo
 
 - **🎙️ Audio Recording** - Record audio using AVAudioRecorder and upload to Supabase storage
 - **📝 Text Input** - Multiline TextEditor & JSON POST to Supabase
-- **📷 Photo Capture** - Camera UI integration with image upload to Supabase storage
+- **📷 Photo Capture** - Camera UI & image upload to Supabase
 - **📁 File Upload** - Select any file type using UIDocumentPicker and upload to Supabase
 - **☁️ Supabase Integration** - All data is securely stored in Supabase with proper authentication
 - **🔐 Secure Credentials** - Environment-based configuration for API keys and tokens

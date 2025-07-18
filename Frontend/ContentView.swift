@@ -107,7 +107,7 @@ struct ContentView: View {
             Spacer()
         }
         .padding()
-        .sheet(isPresented: $showCamera) {
+        .fullScreenCover(isPresented: $showCamera) {
             ImagePicker(selectedImage: $selectedImage, sourceType: .camera)
                 .ignoresSafeArea()
         }
@@ -221,6 +221,7 @@ struct ContentView: View {
                     isUploading = false
                     uploadStatus = "Photo uploaded successfully"
                     selectedImage = nil
+                    showCamera = false  // Dismiss the camera picker
                     showAlert = true
                     alertMessage = "Photo uploaded successfully to: \(key)"
                     print("Stored at:", key)
@@ -229,6 +230,7 @@ struct ContentView: View {
                 await MainActor.run {
                     isUploading = false
                     uploadStatus = "Failed to upload photo: \(error.localizedDescription)"
+                    showCamera = false  // Dismiss the camera picker
                     showAlert = true
                     alertMessage = "Failed to upload photo: \(error.localizedDescription)"
                 }
