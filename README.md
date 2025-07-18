@@ -1,70 +1,97 @@
-# DataSenderApp - CLI Data Ingestion System
+# DataSenderApp - AI Agent Bootstrap System
 
-A text-based data ingestion pipeline that sends everything to Supabase for persistent storage and AI processing.
+A prototype system for building an autonomous AI agent with persistent memory and state, focused on frictionless text streaming and instantaneous feedback loops.
+
+## Quick Start
+
+```bash
+# Start the real-time chat server
+./start_server.sh
+
+# Access from browser
+http://localhost:8080/realtime_chat.html
+
+# Access from iPhone (same network)
+http://YOUR_MAC_IP:8080/realtime_chat.html
+```
 
 ## Architecture
 
+See [ARCHITECTURE.md](ARCHITECTURE.md) for detailed system design.
+
+**Current Flow:**
 ```
-iPhone (Termius SSH) → Mac (Claude CLI) → Supabase → Processing Pipeline
+Voice/Text → Web Interface → Local Server → Claude CLI → Supabase
+                  ↓              ↓
+            Real-time       Code Execution
+            Feedback          via MCP
 ```
 
 ## Core Components
 
-### 1. Terminal Chat Interface
-- `terminal_chat.py` - Fast CLI chat that sends messages to Supabase
-- `claude_listener.py` - Helper for monitoring messages
+### 1. Real-time Chat Interface
+- `realtime_chat.html` - Primary interface with instant feedback
+- WebSocket/SSE for live status updates
+- Visual thinking indicators and progress bars
+- Process interruption capability
+- Voice input via Mac accessibility settings
 
-### 2. Web Interfaces (for browser access)
-- `simple_send.html` - Basic text input
-- `brain_input.html` - Stream of consciousness capture  
-- `workout_logger.html` - Workout tracking
-- `simple_chat.html` - Chat interface
-- `photo_upload.html` - Photo uploader
+### 2. Local Bridge Server
+- `chat_server.py` - Flask server bridging web to Claude CLI
+- Real-time status streaming
+- Process management and interrupts
+- Direct MCP tool access
 
-### 3. MCP Integration
+### 3. Auto-Commit System
+- `auto_commit.sh` - Lightweight fswatch-based versioning
+- Commits after 5s of inactivity
+- Pushes every 30 minutes
+- Zero workflow interruption
+
+### 4. Web Interfaces
+- `brain_chat.html` - Chat with file-based bridge
+- `simple_send.html` - Quick text input
+- `photo_upload.html` - Image uploads
+- `workout_logger.html` - Specialized tracking
+
+### 5. MCP Integration
 - Supabase MCP for database operations
-- GitHub MCP for version control (when needed)
+- GitHub MCP for version control
+- Direct code execution capabilities
 - Configuration in `Backend/MCP/.mcp.json`
 
-### 4. Persistent Memory
-- `CLAUDE.md` provides context persistence across Claude CLI sessions
-- Run Claude CLI from this directory to maintain memory
+### 6. Persistent Memory
+- `CLAUDE.md` provides context persistence
+- Auto-versioning captures all changes
+- Building towards persistent AI state
 
 ## Usage
 
-### Local Terminal
+### Primary Interface - Real-time Web Chat
+
+1. **Start the server**:
+   ```bash
+   ./start_server.sh
+   ```
+
+2. **Access from Mac**:
+   - Open: http://localhost:8080/realtime_chat.html
+   - Use voice input via Accessibility settings
+   - Watch real-time status indicators
+
+3. **Access from iPhone**:
+   - Connect to same WiFi network
+   - Find Mac's IP: `ifconfig | grep 'inet ' | grep -v 127.0.0.1`
+   - Open: http://YOUR_MAC_IP:8080/realtime_chat.html
+   - Add to Home Screen for app-like experience
+
+### Direct Claude CLI Access
+
+For advanced users who need terminal access:
 ```bash
-python3 terminal_chat.py
+cd ~/Projects/DataSenderApp
+claude --dangerously-skip-permissions-check
 ```
-
-### Remote Access (via Termius)
-
-#### Option 1: Terminal Chat (Always Works)
-1. SSH into your Mac
-2. Navigate to project: `cd ~/Projects/DataSenderApp`
-3. Run: `python3 terminal_chat.py`
-
-#### Option 2: Claude CLI via tmux (Uses Subscription) ✅ WORKING!
-1. **First time setup** (on Mac Terminal):
-   ```bash
-   cd ~/Projects/DataSenderApp
-   ./claude_tmux.sh start  # Start authenticated session
-   ```
-
-2. **From Termius SSH on iPhone**:
-   ```bash
-   cd ~/Projects/DataSenderApp
-   ./claude_ssh.sh  # Attaches to existing session
-   ```
-   
-   **Important**: The OAuth login DOES work through tmux! When prompted:
-   - It will show a browser URL
-   - Complete the login on any device
-   - The tmux session receives the authentication
-   - Your $250/month subscription is active (no API charges)
-
-3. **Detach without closing**: Press `Ctrl+B` then `D`
-4. **Reattach anytime**: Just run `./claude_ssh.sh` again
 
 ### Automatic Versioning System
 
@@ -95,10 +122,13 @@ git checkout HEAD~10 -- filename
 git show HEAD~5
 ```
 
-### Quick Snapshots (alternative)
-```bash
-python3 snapshot.py  # Snapshots key files to Supabase
-```
+### Voice Input Setup (Mac)
+
+1. System Preferences → Accessibility → Voice Control
+2. Enable Voice Control
+3. Click in web chat input field
+4. Speak naturally - text appears in real-time
+5. Say "press enter" or click Send
 
 ## Database Schema
 
@@ -135,29 +165,72 @@ DataSenderApp/
 └── README.md              # This file
 ```
 
+## Key Features
+
+1. **Instantaneous Feedback Loop**
+   - Real-time status indicators (connected, thinking, error)
+   - Visual progress for long operations
+   - Animated thinking indicators
+   - Interrupt capability for runaway processes
+
+2. **Persistent Memory & State**
+   - CLAUDE.md for project context
+   - Auto-versioning for safety
+   - Building towards AI with personality
+   - Session continuity across reconnects
+
+3. **Voice-First Design**
+   - Mac Voice Control integration
+   - Natural speech input
+   - Frictionless thought capture
+   - No typing required
+
 ## Philosophy
 
-- **Everything is text** - Simple, searchable, processable
+- **Everything is text** - Voice, images, code all normalized
 - **Supabase first** - Guaranteed capture before processing
-- **No complex sync** - Direct terminal → database flow
-- **Version via snapshots** - Not git commits
-- **CLI-centric** - Terminal is the primary interface
+- **Instantaneous feedback** - Every action has visual response
+- **Persistent state** - Building AI with memory AND personality
+- **Frictionless capture** - Thought to storage in milliseconds
 
-## Remote Setup
+## Future Vision
 
-1. Enable SSH on Mac: System Settings → Sharing → Remote Login
-2. Note your Mac's IP address or hostname
-3. Install Termius on iPhone
-4. Add Mac as host in Termius
-5. SSH in and run terminal_chat.py
+**Processing Pipeline:**
+```
+Supabase → Vector DB (Pinecone) → Embeddings (OpenAI)
+    ↓
+Autonomous Agents (Fireworks, Modal, Anyscale)
+    ↓
+Persistent AI with State + Memory
+```
 
-## Future Pipeline
+**Planned Features:**
+- Conversational calendar integration
+- Task management with context awareness
+- Learned behavioral patterns
+- Multi-device state synchronization
+- Offline queue with smart retry
+- Cloud deployment for anywhere access
 
-Once text is in Supabase, background processes can:
-- Send to LLMs for understanding
-- Generate vector embeddings
-- Route to specialized databases
-- Build temporal knowledge graphs
-- Create automated summaries
+## Development Tools
 
-But the core principle remains: **capture first, process later**.
+```bash
+# Monitor auto-commits
+tail -f /tmp/datasenderapp-autocommit.log
+
+# Check server health
+curl http://localhost:8080/health
+
+# Manual git push
+./push_now.sh
+
+# View recent auto-commits
+git log --oneline -10
+```
+
+## Security Notes
+
+- Local server is network-accessible (0.0.0.0:8080)
+- No authentication in bootstrap phase
+- Supabase keys in frontend (use RLS for production)
+- HTTPS recommended for remote access
