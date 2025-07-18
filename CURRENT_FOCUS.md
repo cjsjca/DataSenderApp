@@ -4,13 +4,22 @@ This document tracks what we're actively focused on RIGHT NOW. It provides conte
 
 ## Current Focus (2025-01-18)
 
-### 🎯 Primary: MCP-First Architecture
-Making MCP servers the default choice over built-in tools. This is THE paradigm shift we're implementing.
+### 🎯 Primary: Browser Interface for Cognitive Flow
+Creating "the browser" - a web interface that enables the same voice-first cognitive flow as terminal, accessible from anywhere.
+
+**Active Insights**:
+- Core purpose is cognitive prosthetic for flow/offload/acceleration
+- Voice-first, pure text proof of concept
+- Browser enables rapid visual iteration
+- Must maintain conceptual/verbal layer while implementation happens automatically
+
+### 🔧 Secondary: MCP-First Architecture
+Making MCP servers the default choice over built-in tools.
 
 **Active Insights**:
 - MCP servers provide exponential vs linear capabilities
-- Need wrapper/mental model shift to enforce MCP-first
-- Two Claude instances communicating via MCP as proof of concept
+- Once MCP works, iteration speed increases exponentially
+- Enables persistence of state for better iteration
 
 ### 🧠 Secondary: Persistent State vs Memory
 Understanding and implementing the distinction between facts (memory) and relationship continuity (state).
