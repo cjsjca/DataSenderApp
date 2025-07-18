@@ -15,12 +15,13 @@ A web application that enables real-time text streaming between a browser-based 
   - Interrupt capability for long-running processes
   - Mobile-responsive design
 
-### Backend (chat_server.py)
-- **Technology**: Python with Flask web framework
+### Backend (simple_server.py)
+- **Technology**: Python standard library only (no external dependencies)
 - **Key Components**:
   - `subprocess.Popen()` - Spawns Claude CLI as a child process
   - Message queues - For bidirectional communication
   - Threading - Handles concurrent I/O operations
+  - `http.server` - Built-in HTTP server
   - CORS enabled - Allows cross-origin requests
 
 ### Communication Flow
@@ -71,17 +72,18 @@ A web application that enables real-time text streaming between a browser-based 
 - Shows Claude's "thinking" process
 - Enables interrupt functionality
 
-**Why Flask?**
-- Lightweight and simple
+**Why no external dependencies?**
+- Zero installation friction
+- Uses Python's built-in http.server
 - Good subprocess handling
-- Easy WebSocket/SSE integration
+- SSE support with standard library
 
 ## File Structure
 
 ```
 DataSenderApp/
 ├── realtime_chat.html    # Frontend web interface
-├── chat_server.py        # Backend Python server
+├── simple_server.py      # Backend Python server (no dependencies)
 ├── start_server.sh       # Launch script
 ├── auto_commit.sh        # Git automation (separate concern)
 ├── ARCHITECTURE.md       # This file
@@ -91,7 +93,7 @@ DataSenderApp/
 
 ## Requirements
 
-- Python 3 with Flask (`pip3 install --user flask flask-cors`)
+- Python 3 (standard library only - no pip install needed)
 - Claude CLI installed and accessible
 - Modern web browser
 - Port 8080 available
