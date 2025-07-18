@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <title>Workout Logger</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+            padding: 20px;
+            background: #f0f0f0;
+            margin: 0;
+        }
+        h1 {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+        textarea {
+            width: 100%;
+            height: 200px;
+            font-size: 16px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-family: monospace;
+            box-sizing: border-box;
+        }
+        button {
+            width: 100%;
+            padding: 15px;
+            font-size: 18px;
+            background: #007AFF;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            margin-top: 10px;
+            cursor: pointer;
+        }
+        button:active {
+            background: #0051D5;
+        }
+        #status {
+            margin-top: 20px;
+            padding: 10px;
+            text-align: center;
+            font-size: 16px;
+            min-height: 20px;
+        }
+        .success {
+            color: green;
+        }
+        .error {
+            color: red;
+        }
+        #recent {
+            margin-top: 20px;
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+        .entry {
+            margin-bottom: 10px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        .timestamp {
+            color: #666;
+            font-size: 12px;
+        }
+        .workout-text {
+            white-space: pre-wrap;
+            font-family: monospace;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Workout Logger</h1>
+    
+    <textarea id="workout" placeholder="Back extension, 130-5,130-5,130-5
+Lateral raise, 15-11, 10-18
+Leg extension, 25-19, 40-12 (nice pump)"></textarea>
+    
+    <button onclick="saveWorkout()">Save Workout</button>
+    
+    <div id="status"></div>
+    
+    <div id="recent">
+        <h3>Recent Entries</h3>
+        <div id="entries">Loading...</div>
+    </div>
+    
+    <script>
+    const SUPABASE_URL = 'https://xvxyzmldrqewigrrccea.supabase.co';
+    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh2eHl6bWxkcnFld2lncnJjY2VhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTI3ODY0NDUsImV4cCI6MjA2ODM2MjQ0NX0.Y6F9a-L6VUdxPdUTNZTBNvAqTWwR6i2R-ACsoZZPxyE';
+    
+    async function saveWorkout() {
+        const workout = document.getElementById('workout').value.trim();
+        const status = document.getElementById('status');
+        
+        if (!workout) {
+            status.innerHTML = '<span class="error">Please enter your workout</span>';
+            return;
+        }
+        
+        status.innerHTML = 'Saving...';
+        
+        const data = {
+            content: workout,
+            type: 'workout',
+            created_at: new Date().toISOString()
+        };
+        
+        try {
+            const response = await fetch(`${SUPABASE_URL}/rest/v1/texts`, {
+                method: 'POST',
+                headers: {
+                    'apikey': SUPABASE_KEY,
+                    'Authorization': `Bearer ${SUPABASE_KEY}`,
+                    'Content-Type': 'application/json',
+                    'Prefer': 'return=representation'
+                },
+                body: JSON.stringify(data)
+            });
+            
+            if (response.ok) {
+                status.innerHTML = '<span class="success">✅ Workout saved!</span>';
+                document.getElementById('workout').value = '';
+                loadRecent();
+            } else {
+                const error = await response.text();
+                status.innerHTML = `<span class="error">❌ Error: ${error}</span>`;
+            }
+        } catch (error) {
+            status.innerHTML = `<span class="error">❌ Error: ${error.message}</span>`;
+        }
+    }
+    
+    async function loadRecent() {
+        try {
+            const response = await fetch(
+                `${SUPABASE_URL}/rest/v1/texts?order=created_at.desc&limit=5`,
+                {
+                    headers: {
+                        'apikey': SUPABASE_KEY,
+                        'Authorization': `Bearer ${SUPABASE_KEY}`
+                    }
+                }
+            );
+            
+            if (response.ok) {
+                const entries = await response.json();
+                const entriesDiv = document.getElementById('entries');
+                
+                if (entries.length === 0) {
+                    entriesDiv.innerHTML = 'No entries yet';
+                    return;
+                }
+                
+                entriesDiv.innerHTML = entries.map(entry => {
+                    const date = new Date(entry.created_at);
+                    const formatted = date.toLocaleDateString() + ' ' + 
+                                    date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                    
+                    return `
+                        <div class="entry">
+                            <div class="timestamp">${formatted}</div>
+                            <div class="workout-text">${escapeHtml(entry.content)}</div>
+                        </div>
+                    `;
+                }).join('');
+            }
+        } catch (error) {
+            console.error('Error loading recent:', error);
+        }
+    }
+    
+    function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+    
+    // Load recent entries on page load
+    loadRecent();
+    
+    // Refresh every 30 seconds
+    setInterval(loadRecent, 30000);
+    </script>
+</body>
+</html>

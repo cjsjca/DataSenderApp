@@ -15,11 +15,7 @@ public class SecretsManager {
         guard let value = Bundle.main.object(forInfoDictionaryKey: "SUPABASE_URL") as? String,
               !value.isEmpty,
               value != "$(SUPABASE_URL)" else {
-            #if DEBUG
-            return "https://example.supabase.co"  // Placeholder for development
-            #else
             fatalError("Missing SUPABASE_URL in Info.plist. Please check your Config/Secrets.xcconfig file.")
-            #endif
         }
         return value
     }
@@ -28,11 +24,7 @@ public class SecretsManager {
         guard let value = Bundle.main.object(forInfoDictionaryKey: "SUPABASE_KEY") as? String,
               !value.isEmpty,
               value != "$(SUPABASE_KEY)" else {
-            #if DEBUG
-            return "placeholder-key"  // Placeholder for development
-            #else
             fatalError("Missing SUPABASE_KEY in Info.plist. Please check your Config/Secrets.xcconfig file.")
-            #endif
         }
         return value
     }

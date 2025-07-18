@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <title>Photo Upload</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+            padding: 20px;
+            background: #f0f0f0;
+            text-align: center;
+        }
+        #fileInput {
+            display: none;
+        }
+        .upload-btn {
+            width: 100%;
+            padding: 20px;
+            font-size: 18px;
+            background: #007AFF;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            cursor: pointer;
+        }
+        #preview {
+            max-width: 100%;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        #status {
+            margin-top: 20px;
+            padding: 10px;
+            font-size: 18px;
+        }
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <h1>Upload Photo</h1>
+    
+    <input type="file" id="fileInput" accept="image/*" capture="environment" onchange="handleFile(this)">
+    <button class="upload-btn" onclick="document.getElementById('fileInput').click()">
+        📷 Choose Photo
+    </button>
+    
+    <img id="preview" class="hidden">
+    
+    <button id="sendBtn" class="upload-btn hidden" onclick="uploadPhoto()">
+        📤 Send to Supabase
+    </button>
+    
+    <div id="status"></div>
+    
+    <script>
+    let selectedFile = null;
+    
+    function handleFile(input) {
+        const file = input.files[0];
+        if (file && file.type.startsWith('image/')) {
+            selectedFile = file;
+            
+            // Show preview
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const preview = document.getElementById('preview');
+                preview.src = e.target.result;
+                preview.classList.remove('hidden');
+                document.getElementById('sendBtn').classList.remove('hidden');
+            };
+            reader.readAsDataURL(file);
+            
+            document.getElementById('status').innerText = `Selected: ${file.name}`;
+        }
+    }
+    
+    async function uploadPhoto() {
+        if (!selectedFile) return;
+        
+        const status = document.getElementById('status');
+        status.innerText = '⏳ Uploading...';
+        
+        try {
+            // Generate filename with timestamp
+            const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+            const filename = `photo-${timestamp}-${selectedFile.name}`;
+            
+            const response = await fetch(
+                `https://xvxyzmldrqewigrrccea.supabase.co/storage/v1/object/uploads/${filename}`,
+                {
+                    method: 'POST',
+                    headers: {
+                        'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh2eHl6bWxkcnFld2lncnJjY2VhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTI3ODY0NDUsImV4cCI6MjA2ODM2MjQ0NX0.Y6F9a-L6VUdxPdUTNZTBNvAqTWwR6i2R-ACsoZZPxyE',
+                        'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh2eHl6bWxkcnFld2lncnJjY2VhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTI3ODY0NDUsImV4cCI6MjA2ODM2MjQ0NX0.Y6F9a-L6VUdxPdUTNZTBNvAqTWwR6i2R-ACsoZZPxyE',
+                        'Content-Type': selectedFile.type
+                    },
+                    body: selectedFile
+                }
+            );
+            
+            if (response.ok) {
+                status.innerHTML = `✅ Uploaded!<br>
+                    <a href="https://xvxyzmldrqewigrrccea.supabase.co/storage/v1/object/public/uploads/${filename}" 
+                       target="_blank">View Photo</a>`;
+                
+                // Reset for next upload
+                selectedFile = null;
+                document.getElementById('preview').classList.add('hidden');
+                document.getElementById('sendBtn').classList.add('hidden');
+                document.getElementById('fileInput').value = '';
+            } else {
+                const error = await response.text();
+                status.innerText = '❌ Upload failed: ' + error;
+            }
+        } catch (error) {
+            status.innerText = '❌ Error: ' + error.message;
+        }
+    }
+    </script>
+</body>
+</html>

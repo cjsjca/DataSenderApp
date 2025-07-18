@@ -1,7 +1,6 @@
 import SwiftUI
 import PhotosUI
 import UniformTypeIdentifiers
-import Supabase
 
 struct ContentView: View {
     @EnvironmentObject private var appState: AppState
@@ -114,7 +113,7 @@ struct ContentView: View {
         }
         .fileImporter(
             isPresented: $showFilePicker,
-            allowedContentTypes: [.item, .folder],
+            allowedContentTypes: [UTType.item],
             allowsMultipleSelection: false
         ) { result in
             switch result {
@@ -145,7 +144,7 @@ struct ContentView: View {
             }
         }
         .onAppear {
-            storageManager = StorageManager(supabase: appState.supabase)
+            storageManager = StorageManager()
         }
     }
     
@@ -158,11 +157,15 @@ struct ContentView: View {
             }
         } else {
             audioRecorder.requestPermission { granted in
-                if granted {
-                    audioRecorder.startRecording()
-                    isRecording = true
-                } else {
-                    uploadStatus = "Microphone permission denied"
+                DispatchQueue.main.async {
+                    if granted {
+                        self.audioRecorder.startRecording()
+                        self.isRecording = true
+                    } else {
+                        self.uploadStatus = "Microphone permission denied"
+                        self.showAlert = true
+                        self.alertMessage = "Please grant microphone permission in Settings"
+                    }
                 }
             }
         }
@@ -176,19 +179,49 @@ struct ContentView: View {
         
         Task {
             do {
-                try await storageManager.uploadText(textInput)
+                // Add a timeout
+                let task = Task {
+                    try await storageManager.uploadText(textInput)
+                }
+                
+                // Wait for 10 seconds max
+                try await withTimeout(seconds: 10) {
+                    try await task.value
+                }
+                
                 await MainActor.run {
                     isUploading = false
                     uploadStatus = "Text saved successfully"
                     textInput = ""
                     showTextInput = false
+                    showAlert = true
+                    alertMessage = "Text saved successfully!"
                 }
             } catch {
                 await MainActor.run {
                     isUploading = false
                     uploadStatus = "Failed to save text: \(error.localizedDescription)"
+                    showAlert = true
+                    alertMessage = "Failed to save text: \(error.localizedDescription)"
                 }
             }
+        }
+    }
+    
+    func withTimeout<T>(seconds: TimeInterval, operation: @escaping () async throws -> T) async throws -> T {
+        try await withThrowingTaskGroup(of: T.self) { group in
+            group.addTask {
+                try await operation()
+            }
+            
+            group.addTask {
+                try await Task.sleep(nanoseconds: UInt64(seconds * 1_000_000_000))
+                throw URLError(.timedOut)
+            }
+            
+            let result = try await group.next()!
+            group.cancelAll()
+            return result
         }
     }
     

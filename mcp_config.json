@@ -1,0 +1,32 @@
+{
+  "mcpServers": {
+    "cortex-memory": {
+      "type": "stdio",
+      "command": "./venv/bin/python /Users/loaner/cortex-docker/cortex/memory_search_mcp.py",
+      "args": [],
+      "env": {}
+    },
+    "supabase": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["@supabase/mcp-server-supabase@latest", "--project-ref=xvxyzmldrqewigrrccea"],
+      "env": {
+        "SUPABASE_ACCESS_TOKEN": "YOUR_SUPABASE_ACCESS_TOKEN"
+      }
+    },
+    "github": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["@cameroncooke/mcp-server-github@latest"],
+      "env": {
+        "GITHUB_TOKEN": "YOUR_GITHUB_TOKEN"
+      }
+    },
+    "chromadb": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["@humainlabs/chromadb-mcp"],
+      "env": {}
+    }
+  }
+}

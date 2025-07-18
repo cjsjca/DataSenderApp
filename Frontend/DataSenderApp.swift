@@ -1,14 +1,11 @@
 import SwiftUI
-import Supabase
 
 class AppState: ObservableObject {
-    let supabase: SupabaseClient
-    
+    // Remove Supabase dependency completely for now
     init() {
-        self.supabase = SupabaseClient(
-            supabaseURL: URL(string: SecretsManager.supabaseUrl)!,
-            supabaseKey: SecretsManager.supabaseKey
-        )
+        print("AppState init - Testing credentials loading...")
+        print("Supabase URL from Bundle: \(SecretsManager.supabaseUrl)")
+        print("Supabase Key prefix: \(SecretsManager.supabaseKey.prefix(20))...")
     }
 }
 
