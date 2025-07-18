@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0702BFA98B2FFD4F54C67DA1 /* DocumentPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E082A266A136A615EB3FCD9 /* DocumentPicker.swift */; };
 		0C63FCF7DE57C8DAFBB42BA6 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFCBF84F66B0FBD68EEF520A /* ContentView.swift */; };
 		21DC299D151166F4050BB8E1 /* AudioRecorder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 092D82339F332F971B7F150B /* AudioRecorder.swift */; };
 		404F8B8B8800D222F220513D /* StorageManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60EAC17CE828AC0192CC53E7 /* StorageManager.swift */; };
@@ -45,6 +46,7 @@
 		393444763532B11AB67C9C69 /* AppStateTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppStateTests.swift; sourceTree = "<group>"; };
 		473DFF6100CB015C38FC8EEA /* DataSenderApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataSenderApp.swift; sourceTree = "<group>"; };
 		5D7A6563B9312761B80DA6A9 /* DataSenderApp.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = DataSenderApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		5E082A266A136A615EB3FCD9 /* DocumentPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentPicker.swift; sourceTree = "<group>"; };
 		60114FD91BC96BDF8407306B /* BasicTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BasicTests.swift; sourceTree = "<group>"; };
 		60EAC17CE828AC0192CC53E7 /* StorageManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorageManager.swift; sourceTree = "<group>"; };
 		6BA033346ED4CCCFC27AEEB4 /* Release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Release.xcconfig; sourceTree = "<group>"; };
@@ -96,6 +98,7 @@
 			children = (
 				AFCBF84F66B0FBD68EEF520A /* ContentView.swift */,
 				473DFF6100CB015C38FC8EEA /* DataSenderApp.swift */,
+				5E082A266A136A615EB3FCD9 /* DocumentPicker.swift */,
 			);
 			name = DataSenderApp;
 			path = Frontend;
@@ -266,6 +269,7 @@
 				21DC299D151166F4050BB8E1 /* AudioRecorder.swift in Sources */,
 				0C63FCF7DE57C8DAFBB42BA6 /* ContentView.swift in Sources */,
 				C1AF37FCEEE31F7E525B3463 /* DataSenderApp.swift in Sources */,
+				0702BFA98B2FFD4F54C67DA1 /* DocumentPicker.swift in Sources */,
 				C8C8A751A33970639C6D31D1 /* NetworkManager.swift in Sources */,
 				F6CB3B552DB22BB22F746FCE /* SecretsManager.swift in Sources */,
 				404F8B8B8800D222F220513D /* StorageManager.swift in Sources */,

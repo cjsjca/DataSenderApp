@@ -114,7 +114,7 @@ struct ContentView: View {
         }
         .fileImporter(
             isPresented: $showFilePicker,
-            allowedContentTypes: [.item],
+            allowedContentTypes: [.item, .folder],
             allowsMultipleSelection: false
         ) { result in
             switch result {
@@ -263,6 +263,14 @@ struct ContentView: View {
         
         Task {
             do {
+                // Start accessing the security-scoped resource
+                let accessing = url.startAccessingSecurityScopedResource()
+                defer {
+                    if accessing {
+                        url.stopAccessingSecurityScopedResource()
+                    }
+                }
+                
                 let data = try Data(contentsOf: url)
                 let mimeType = getMimeType(for: url)
                 let key = try await storageManager.uploadFile(data, filename: url.lastPathComponent, mimeType: mimeType)
