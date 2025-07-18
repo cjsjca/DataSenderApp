@@ -1,4 +1,5 @@
 import Foundation
+import UIKit
 import Supabase
 
 class StorageManager: ObservableObject {
@@ -26,5 +27,14 @@ class StorageManager: ObservableObject {
             .from("texts")
             .insert(["content": text])
             .execute()
+    }
+    
+    func uploadImage(_ image: UIImage) async throws -> String {
+        guard let imageData = image.jpegData(compressionQuality: 0.8) else {
+            throw NSError(domain: "StorageManager", code: 1, userInfo: [NSLocalizedDescriptionKey: "Failed to convert image to JPEG data"])
+        }
+        
+        let filename = "photo-\(UUID().uuidString).jpg"
+        return try await uploadFile(imageData, filename: filename, mimeType: "image/jpeg")
     }
 }

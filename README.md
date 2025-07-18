@@ -13,7 +13,7 @@ DataSenderApp is a SwiftUI iOS application that provides a seamless interface fo
 
 - **🎙️ Audio Recording** - Record audio using AVAudioRecorder and upload to Supabase storage
 - **📝 Text Input** - Multiline TextEditor & JSON POST to Supabase
-- **📷 Photo Capture** - Take photos using the camera and upload to Supabase storage
+- **📷 Photo Capture** - Camera UI integration with image upload to Supabase storage
 - **📁 File Upload** - Select any file type using UIDocumentPicker and upload to Supabase
 - **☁️ Supabase Integration** - All data is securely stored in Supabase with proper authentication
 - **🔐 Secure Credentials** - Environment-based configuration for API keys and tokens
@@ -120,6 +120,24 @@ The app allows users to input multiline text through a TextEditor and store it i
 2. Type or paste text in the TextEditor
 3. Tap "Send" to upload to Supabase
 4. The text is stored in the `texts` table with the schema above
+
+### Photo Capture
+The app provides a native camera interface for capturing photos and uploading them to Supabase storage:
+
+**Flow:**
+1. Tap the "Take Photo" button
+2. Grant camera permissions when prompted
+3. The native iOS camera picker appears
+4. Take a photo using the camera
+5. The photo is automatically converted to JPEG format (80% quality)
+6. Uploaded to the "uploads" bucket in Supabase storage
+7. Success/error alert displays the result
+8. File is stored with a unique UUID-based filename
+
+**Storage Format:**
+- Bucket: `uploads`
+- Filename: `photo-{UUID}.jpg`
+- MIME type: `image/jpeg`
 
 ## Supabase MCP Integration
 

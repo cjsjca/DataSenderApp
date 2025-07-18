@@ -214,25 +214,23 @@ struct ContentView: View {
         isUploading = true
         uploadStatus = ""
         
-        guard let imageData = image.jpegData(compressionQuality: 0.8) else {
-            uploadStatus = "Failed to process image"
-            isUploading = false
-            return
-        }
-        
         Task {
             do {
-                let key = try await storageManager.uploadFile(imageData, filename: "photo.jpg", mimeType: "image/jpeg")
+                let key = try await storageManager.uploadImage(image)
                 await MainActor.run {
                     isUploading = false
                     uploadStatus = "Photo uploaded successfully"
                     selectedImage = nil
+                    showAlert = true
+                    alertMessage = "Photo uploaded successfully to: \(key)"
                     print("Stored at:", key)
                 }
             } catch {
                 await MainActor.run {
                     isUploading = false
                     uploadStatus = "Failed to upload photo: \(error.localizedDescription)"
+                    showAlert = true
+                    alertMessage = "Failed to upload photo: \(error.localizedDescription)"
                 }
             }
         }
