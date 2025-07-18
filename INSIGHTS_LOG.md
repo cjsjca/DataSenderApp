@@ -106,6 +106,25 @@ This document captures key realizations and insights that emerge during developm
 
 ---
 
+## 2025-01-18: Insights Have Dynamic Priority
+
+**Insight**: Insights have shifting importance based on current focus. What's most critical today (MCP-first) might be background knowledge tomorrow when we're focused on something else. Priority is contextual, not absolute.
+
+**Implications**:
+- Need to track "current focus" alongside insights
+- Today's breakthrough is tomorrow's assumption
+- Importance ≠ Truth (all insights can be true but vary in relevance)
+- Active insights vs dormant insights
+
+**Possible Solution**:
+- Add CURRENT_FOCUS.md to track what we're actively working on
+- Insights gain/lose priority based on alignment with current focus
+- Like a "working memory" for the project's attention
+
+**Discovered while**: Realizing MCP-first is crucial NOW but might be obvious later
+
+---
+
 ## How to Use This Document
 
 1. **Capture immediately**: When an insight emerges, document it right away
