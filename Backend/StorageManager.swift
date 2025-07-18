@@ -12,9 +12,9 @@ class StorageManager: ObservableObject {
         let bucket = supabase.storage.from("uploads")
         let path = "\(UUID().uuidString)-\(filename)"
         
-        let uploadResponse = try await bucket.upload(
-            path: path,
-            file: data,
+        _ = try await bucket.upload(
+            path,
+            data: data,
             options: FileOptions(contentType: mimeType)
         )
         
@@ -22,7 +22,7 @@ class StorageManager: ObservableObject {
     }
     
     func uploadText(_ text: String) async throws {
-        _ = try await supabase.database
+        _ = try await supabase
             .from("texts")
             .insert(["content": text])
             .execute()

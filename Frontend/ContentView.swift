@@ -5,7 +5,7 @@ import UniformTypeIdentifiers
 import Supabase
 
 struct ContentView: View {
-    @EnvironmentObject private var supabase: SupabaseClient
+    @EnvironmentObject private var appState: AppState
     @StateObject private var audioRecorder = AudioRecorder()
     @State private var storageManager: StorageManager?
     
@@ -125,7 +125,7 @@ struct ContentView: View {
             }
         }
         .onAppear {
-            storageManager = StorageManager(supabase: supabase)
+            storageManager = StorageManager(supabase: appState.supabase)
         }
     }
     

@@ -61,23 +61,29 @@ targets:
       - package: Supabase
       - package: DotEnv
     settings:
-      PRODUCT_BUNDLE_IDENTIFIER: com.cjsjca.DataSenderApp
-      MARKETING_VERSION: "1.0"
-      CURRENT_PROJECT_VERSION: "1"
-      INFOPLIST_FILE: Info.plist
-      ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
-      ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
-      TARGETED_DEVICE_FAMILY: "1,2"
-      SWIFT_VERSION: "5.0"
-      CODE_SIGN_STYLE: Automatic
-      GENERATE_INFOPLIST_FILE: NO
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.cjsjca.DataSenderApp
+        MARKETING_VERSION: "1.0"
+        CURRENT_PROJECT_VERSION: "1"
+        INFOPLIST_FILE: Info.plist
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
+        TARGETED_DEVICE_FAMILY: "1,2"
+        SWIFT_VERSION: "5.0"
+        GENERATE_INFOPLIST_FILE: NO
+      configs:
+        Debug:
+          CODE_SIGN_IDENTITY: ""
+          CODE_SIGNING_REQUIRED: NO
+          CODE_SIGNING_ALLOWED: NO
+        Release:
+          CODE_SIGN_STYLE: Automatic
 
   DataSenderAppTests:
     type: bundle.unit-test
     platform: iOS
     deploymentTarget: "18.5"
     sources:
-      - path: Tests/UnitTests
       - path: DataSenderAppTests
         excludes:
           - "**/*.bak"
@@ -99,7 +105,6 @@ targets:
     platform: iOS
     deploymentTarget: "18.5"
     sources:
-      - path: Tests/UITests
       - path: DataSenderAppUITests
     dependencies:
       - target: DataSenderApp

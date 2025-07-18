@@ -1,17 +1,25 @@
 import SwiftUI
 import Supabase
 
+class AppState: ObservableObject {
+    let supabase: SupabaseClient
+    
+    init() {
+        self.supabase = SupabaseClient(
+            supabaseURL: URL(string: SecretsManager.supabaseUrl)!,
+            supabaseKey: SecretsManager.supabaseKey
+        )
+    }
+}
+
 @main
 struct DataSenderApp: App {
-    let supabase = SupabaseClient(
-        supabaseURL: URL(string: SecretsManager.supabaseUrl)!,
-        supabaseKey: SecretsManager.supabaseKey
-    )
+    @StateObject private var appState = AppState()
     
     var body: some Scene {
         WindowGroup {
             ContentView()
-                .environmentObject(supabase)
+                .environmentObject(appState)
         }
     }
 }

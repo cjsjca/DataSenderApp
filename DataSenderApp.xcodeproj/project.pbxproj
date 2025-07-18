@@ -10,17 +10,14 @@
 		0C63FCF7DE57C8DAFBB42BA6 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFCBF84F66B0FBD68EEF520A /* ContentView.swift */; };
 		21DC299D151166F4050BB8E1 /* AudioRecorder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 092D82339F332F971B7F150B /* AudioRecorder.swift */; };
 		404F8B8B8800D222F220513D /* StorageManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60EAC17CE828AC0192CC53E7 /* StorageManager.swift */; };
-		51923AE4C08F43CEC0A404DD /* ContentViewUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CFA80B2206D793D12DFA1FEF /* ContentViewUITests.swift */; };
 		5765F5313E2B0777BC9230EA /* Supabase in Frameworks */ = {isa = PBXBuildFile; productRef = 5208C76B7980B05A99EB290C /* Supabase */; };
 		6057B60090A5C512DF99C67A /* DataSenderAppUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A270C1E44C67E4D07AE68489 /* DataSenderAppUITestsLaunchTests.swift */; };
 		723319776C02333C1BC85357 /* DataSenderAppUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBB3DF6D578852823E72BDED /* DataSenderAppUITests.swift */; };
 		8099FC8B80489E659E689DC5 /* DotEnv in Frameworks */ = {isa = PBXBuildFile; productRef = F420741C5AE52A10A3690F92 /* DotEnv */; };
-		8A31A8085771A3AEE0B82875 /* SecretsManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25297F91A6670950715E1F7B /* SecretsManagerTests.swift */; };
 		8EC9B9E88D8F5CFC845E8FE8 /* BasicTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60114FD91BC96BDF8407306B /* BasicTests.swift */; };
-		B4C5B275FC17E4FFAB96CF3F /* StorageManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EAD2D0F81E08974382E8865E /* StorageManagerTests.swift */; };
 		C1AF37FCEEE31F7E525B3463 /* DataSenderApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 473DFF6100CB015C38FC8EEA /* DataSenderApp.swift */; };
 		C8C8A751A33970639C6D31D1 /* NetworkManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F8075E30104E3B0F29F99F4 /* NetworkManager.swift */; };
-		D18D85E0FC1D62FF73859409 /* NetworkManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B823CA2D266145575ADBA063 /* NetworkManagerTests.swift */; };
+		CFA81C88897CD19C9FDF6283 /* AppStateTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 393444763532B11AB67C9C69 /* AppStateTests.swift */; };
 		F6CB3B552DB22BB22F746FCE /* SecretsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B48F2C3405680BBF31417D0F /* SecretsManager.swift */; };
 /* End PBXBuildFile section */
 
@@ -44,7 +41,7 @@
 /* Begin PBXFileReference section */
 		092D82339F332F971B7F150B /* AudioRecorder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioRecorder.swift; sourceTree = "<group>"; };
 		15E6AACE657732C9DFBBB59A /* DataSenderAppUITests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = DataSenderAppUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		25297F91A6670950715E1F7B /* SecretsManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SecretsManagerTests.swift; sourceTree = "<group>"; };
+		393444763532B11AB67C9C69 /* AppStateTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppStateTests.swift; sourceTree = "<group>"; };
 		473DFF6100CB015C38FC8EEA /* DataSenderApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataSenderApp.swift; sourceTree = "<group>"; };
 		5D7A6563B9312761B80DA6A9 /* DataSenderApp.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = DataSenderApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		60114FD91BC96BDF8407306B /* BasicTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BasicTests.swift; sourceTree = "<group>"; };
@@ -54,10 +51,7 @@
 		A270C1E44C67E4D07AE68489 /* DataSenderAppUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataSenderAppUITestsLaunchTests.swift; sourceTree = "<group>"; };
 		AFCBF84F66B0FBD68EEF520A /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		B48F2C3405680BBF31417D0F /* SecretsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SecretsManager.swift; sourceTree = "<group>"; };
-		B823CA2D266145575ADBA063 /* NetworkManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkManagerTests.swift; sourceTree = "<group>"; };
 		BBB3DF6D578852823E72BDED /* DataSenderAppUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataSenderAppUITests.swift; sourceTree = "<group>"; };
-		CFA80B2206D793D12DFA1FEF /* ContentViewUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentViewUITests.swift; sourceTree = "<group>"; };
-		EAD2D0F81E08974382E8865E /* StorageManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorageManagerTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -84,27 +78,10 @@
 			path = Backend;
 			sourceTree = "<group>";
 		};
-		06039B1FA55E48DBCB1EDB8C /* UnitTests */ = {
-			isa = PBXGroup;
-			children = (
-				B823CA2D266145575ADBA063 /* NetworkManagerTests.swift */,
-				25297F91A6670950715E1F7B /* SecretsManagerTests.swift */,
-				EAD2D0F81E08974382E8865E /* StorageManagerTests.swift */,
-			);
-			path = UnitTests;
-			sourceTree = "<group>";
-		};
-		46DB3FA0E60449FA55F5C748 /* UITests */ = {
-			isa = PBXGroup;
-			children = (
-				CFA80B2206D793D12DFA1FEF /* ContentViewUITests.swift */,
-			);
-			path = UITests;
-			sourceTree = "<group>";
-		};
 		4D3DFE420B1E331EC67D5F69 /* DataSenderAppTests */ = {
 			isa = PBXGroup;
 			children = (
+				393444763532B11AB67C9C69 /* AppStateTests.swift */,
 				60114FD91BC96BDF8407306B /* BasicTests.swift */,
 			);
 			path = DataSenderAppTests;
@@ -118,15 +95,6 @@
 			);
 			name = DataSenderApp;
 			path = Frontend;
-			sourceTree = "<group>";
-		};
-		8DDDAE5743314C1FED3374EF /* Tests */ = {
-			isa = PBXGroup;
-			children = (
-				46DB3FA0E60449FA55F5C748 /* UITests */,
-				06039B1FA55E48DBCB1EDB8C /* UnitTests */,
-			);
-			path = Tests;
 			sourceTree = "<group>";
 		};
 		9B0E69692FCEAB55DD808026 /* DataSenderAppUITests */ = {
@@ -145,7 +113,6 @@
 				4E8442CBB0C0A83F70661C1E /* DataSenderApp */,
 				4D3DFE420B1E331EC67D5F69 /* DataSenderAppTests */,
 				9B0E69692FCEAB55DD808026 /* DataSenderAppUITests */,
-				8DDDAE5743314C1FED3374EF /* Tests */,
 				E8561B104E046ACE5B0415C9 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -231,9 +198,6 @@
 					25A584AD3E7D0F3A5698AEF1 = {
 						ProvisioningStyle = Automatic;
 					};
-					6E2BD708B03425B0E237CFB8 = {
-						ProvisioningStyle = Automatic;
-					};
 					D576D9DBC98A12CB949CCDC2 = {
 						ProvisioningStyle = Automatic;
 						TestTargetID = 6E2BD708B03425B0E237CFB8;
@@ -270,10 +234,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CFA81C88897CD19C9FDF6283 /* AppStateTests.swift in Sources */,
 				8EC9B9E88D8F5CFC845E8FE8 /* BasicTests.swift in Sources */,
-				D18D85E0FC1D62FF73859409 /* NetworkManagerTests.swift in Sources */,
-				8A31A8085771A3AEE0B82875 /* SecretsManagerTests.swift in Sources */,
-				B4C5B275FC17E4FFAB96CF3F /* StorageManagerTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -294,7 +256,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				51923AE4C08F43CEC0A404DD /* ContentViewUITests.swift in Sources */,
 				723319776C02333C1BC85357 /* DataSenderAppUITests.swift in Sources */,
 				6057B60090A5C512DF99C67A /* DataSenderAppUITestsLaunchTests.swift in Sources */,
 			);
@@ -365,8 +326,9 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				CODE_SIGN_STYLE = Automatic;
+				CODE_SIGNING_ALLOWED = NO;
+				CODE_SIGNING_REQUIRED = NO;
+				CODE_SIGN_IDENTITY = "";
 				CURRENT_PROJECT_VERSION = 1;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = Info.plist;
