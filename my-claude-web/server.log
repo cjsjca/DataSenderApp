@@ -1,11 +1,3 @@
 Claude web interface running at http://localhost:3000
 Health check available at http://localhost:3000/health
 Using subscription-authenticated Claude CLI from ~/.claude
-=> got: { text: 'Hello' }
-Executing command: /opt/homebrew/bin/claude --dangerously-skip-permissions -p "Hello" --output-format json
-Attempt 1 - Exit code: 143, stderr: , stdout: 
-Final error after retries: Error: Claude exited with code 143
-    at ChildProcess.<anonymous> (/Users/loaner/Projects/DataSenderApp/my-claude-web/server.js:63:20)
-    at ChildProcess.emit (node:events:507:28)
-    at maybeClose (node:internal/child_process:1101:16)
-    at ChildProcess._handle.onexit (node:internal/child_process:305:5)
