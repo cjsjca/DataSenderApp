@@ -4,10 +4,9 @@ A web application for real-time text streaming to Claude CLI.
 
 ## What This Is
 
-- Browser interface for text input (realtime_chat.html)
-- Bridge server that connects to Claude CLI (chat_server.py)
+- Frontend web interface for text input (realtime_chat.html)
+- Backend server that connects web app to Claude CLI (chat_server.py)
 - Auto-commit system for versioning (auto_commit.sh)
-- Supabase for persistent storage
 
 ## Auto-Commit System
 
