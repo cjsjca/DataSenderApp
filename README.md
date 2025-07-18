@@ -23,10 +23,10 @@ http://localhost:8080/realtime_chat.html
 
 ## Files
 
-- `realtime_chat.html` - Browser interface with status indicators
-- `chat_server.py` - Bridge between browser and Claude CLI  
+- `realtime_chat.html` - Frontend web interface with real-time status indicators
+- `chat_server.py` - Backend server (Python/Flask) that bridges web app to Claude CLI  
 - `auto_commit.sh` - Git auto-versioning (commits every 5s, pushes every 30min)
-- `start_server.sh` - Server launcher
+- `start_server.sh` - Server launcher script
 
 ## iPhone Access
 
