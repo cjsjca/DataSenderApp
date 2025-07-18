@@ -1,16 +1,16 @@
-# Critical State Capture - Before Auto-Compact
+# Project Context - DataSenderApp
 
-Captured at 19% context remaining. This documents the essential state that must survive compaction.
+This document contains essential context for working on this project.
 
 ## Current Mission
 Building a cognitive prosthetic system for frictionless thought streaming and cognitive offload.
 
 ## Immediate Next Steps (Priority Order)
 
-1. **TEST MCP TOOLS** - We configured Supabase MCP but haven't restarted to test
-   - Exit Claude CLI
-   - Run `claude --resume` and select this session
-   - Test twin communication via MCP
+1. **TEST MCP TOOLS** - Test Supabase MCP integration
+   - Check if MCP servers are configured: `claude mcp list`
+   - If not configured, see .mcp.json for setup
+   - Test twin Claude instances communicating via MCP
 
 2. **Browser Interface** - After MCP, build "the browser" for mobile access
    - Voice-first via built-in dictation (NOT voice capture)
@@ -82,13 +82,10 @@ DataSenderApp/
 
 *This capture made at 19% context. Use this to restore working state after compaction.*
 
-## Post-Compaction Rehydration
+## Project Navigation
 
-When you return after compaction:
-1. Start here - this is your bootloader
-2. Read CURRENT_FOCUS.md next
-3. Read CONSULTANT_ANALYSIS.md for strategy
-4. Check todos (they survive)
-5. Only read other docs as needed
-
-You won't remember preparing this, but trust it.
+1. Start here for context
+2. Read CURRENT_FOCUS.md for active priorities
+3. Read CONSULTANT_ANALYSIS.md for architectural strategy
+4. Check your todo list
+5. Other docs provide deeper detail as needed
