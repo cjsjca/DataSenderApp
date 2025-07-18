@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Debug Test</title>
+</head>
+<body>
+    <h1>Simple Debug Test</h1>
+    <input type="text" id="message" placeholder="Enter message">
+    <button onclick="sendTest()">Send</button>
+    <div id="status"></div>
+    <div id="response"></div>
+    
+    <script>
+    function sendTest() {
+        const message = document.getElementById('message').value;
+        const status = document.getElementById('status');
+        const response = document.getElementById('response');
+        
+        status.textContent = 'Sending...';
+        
+        fetch('http://localhost:8082/chat', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({message: message})
+        })
+        .then(r => r.json())
+        .then(data => {
+            status.textContent = 'Sent! Status: ' + data.status;
+            console.log('Response:', data);
+        })
+        .catch(err => {
+            status.textContent = 'Error: ' + err;
+            console.error(err);
+        });
+    }
+    
+    // Test SSE
+    const eventSource = new EventSource('http://localhost:8082/events');
+    eventSource.onmessage = (event) => {
+        const data = JSON.parse(event.data);
+        response.innerHTML += '<p>' + JSON.stringify(data) + '</p>';
+    };
+    </script>
+</body>
+</html>
