@@ -66,11 +66,12 @@ targets:
         TARGETED_DEVICE_FAMILY: "1,2"
         SWIFT_VERSION: "5.0"
         GENERATE_INFOPLIST_FILE: NO
+        CODE_SIGN_STYLE: Automatic
+        DEVELOPMENT_TEAM: YOUR_TEAM_ID  # Replace with your actual Apple Developer Team ID
       configs:
         Debug:
-          CODE_SIGN_IDENTITY: ""
-          CODE_SIGNING_REQUIRED: NO
-          CODE_SIGNING_ALLOWED: NO
+          # Use automatic signing for device builds
+          CODE_SIGN_STYLE: Automatic
         Release:
           CODE_SIGN_STYLE: Automatic
 
@@ -93,6 +94,7 @@ targets:
       GENERATE_INFOPLIST_FILE: YES
       SWIFT_VERSION: "5.0"
       CODE_SIGN_STYLE: Automatic
+      DEVELOPMENT_TEAM: YOUR_TEAM_ID  # Replace with your actual Apple Developer Team ID
       TARGETED_DEVICE_FAMILY: "1,2"
 
   DataSenderAppUITests:
@@ -113,6 +115,7 @@ targets:
       GENERATE_INFOPLIST_FILE: YES
       SWIFT_VERSION: "5.0"
       CODE_SIGN_STYLE: Automatic
+      DEVELOPMENT_TEAM: YOUR_TEAM_ID  # Replace with your actual Apple Developer Team ID
       TARGETED_DEVICE_FAMILY: "1,2"
 
 packages:

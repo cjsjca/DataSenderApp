@@ -14,7 +14,6 @@
 		5765F5313E2B0777BC9230EA /* Supabase in Frameworks */ = {isa = PBXBuildFile; productRef = 5208C76B7980B05A99EB290C /* Supabase */; };
 		6057B60090A5C512DF99C67A /* DataSenderAppUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A270C1E44C67E4D07AE68489 /* DataSenderAppUITestsLaunchTests.swift */; };
 		723319776C02333C1BC85357 /* DataSenderAppUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBB3DF6D578852823E72BDED /* DataSenderAppUITests.swift */; };
-		8099FC8B80489E659E689DC5 /* DotEnv in Frameworks */ = {isa = PBXBuildFile; productRef = F420741C5AE52A10A3690F92 /* DotEnv */; };
 		8EC9B9E88D8F5CFC845E8FE8 /* BasicTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60114FD91BC96BDF8407306B /* BasicTests.swift */; };
 		C1AF37FCEEE31F7E525B3463 /* DataSenderApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 473DFF6100CB015C38FC8EEA /* DataSenderApp.swift */; };
 		C612FBFF818C2D718F334378 /* EndToEndTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 831BFDDF4707C448785C7659 /* EndToEndTests.swift */; };
@@ -48,9 +47,11 @@
 		5D7A6563B9312761B80DA6A9 /* DataSenderApp.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = DataSenderApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		60114FD91BC96BDF8407306B /* BasicTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BasicTests.swift; sourceTree = "<group>"; };
 		60EAC17CE828AC0192CC53E7 /* StorageManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorageManager.swift; sourceTree = "<group>"; };
+		6BA033346ED4CCCFC27AEEB4 /* Release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Release.xcconfig; sourceTree = "<group>"; };
 		70B15EA8D4486DF5BF7D2C2B /* DataSenderAppTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = DataSenderAppTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		7F8075E30104E3B0F29F99F4 /* NetworkManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkManager.swift; sourceTree = "<group>"; };
 		831BFDDF4707C448785C7659 /* EndToEndTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EndToEndTests.swift; sourceTree = "<group>"; };
+		93B754AA08A6981179535F05 /* Debug.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Debug.xcconfig; sourceTree = "<group>"; };
 		A270C1E44C67E4D07AE68489 /* DataSenderAppUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataSenderAppUITestsLaunchTests.swift; sourceTree = "<group>"; };
 		AFCBF84F66B0FBD68EEF520A /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		B48F2C3405680BBF31417D0F /* SecretsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SecretsManager.swift; sourceTree = "<group>"; };
@@ -64,7 +65,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				5765F5313E2B0777BC9230EA /* Supabase in Frameworks */,
-				8099FC8B80489E659E689DC5 /* DotEnv in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -112,10 +112,20 @@
 			path = DataSenderAppUITests;
 			sourceTree = "<group>";
 		};
+		9E8716A9B9BA5E15E519951D /* Config */ = {
+			isa = PBXGroup;
+			children = (
+				93B754AA08A6981179535F05 /* Debug.xcconfig */,
+				6BA033346ED4CCCFC27AEEB4 /* Release.xcconfig */,
+			);
+			path = Config;
+			sourceTree = "<group>";
+		};
 		D46A6EC197FA07D0A3B2E3B3 = {
 			isa = PBXGroup;
 			children = (
 				05E45ABF3D6A88D5993B0744 /* Backend */,
+				9E8716A9B9BA5E15E519951D /* Config */,
 				4E8442CBB0C0A83F70661C1E /* DataSenderApp */,
 				4D3DFE420B1E331EC67D5F69 /* DataSenderAppTests */,
 				9B0E69692FCEAB55DD808026 /* DataSenderAppUITests */,
@@ -168,7 +178,6 @@
 			name = DataSenderApp;
 			packageProductDependencies = (
 				5208C76B7980B05A99EB290C /* Supabase */,
-				F420741C5AE52A10A3690F92 /* DotEnv */,
 			);
 			productName = DataSenderApp;
 			productReference = 5D7A6563B9312761B80DA6A9 /* DataSenderApp.app */;
@@ -202,9 +211,15 @@
 				LastUpgradeCheck = 1430;
 				TargetAttributes = {
 					25A584AD3E7D0F3A5698AEF1 = {
+						DevelopmentTeam = YOUR_TEAM_ID;
+						ProvisioningStyle = Automatic;
+					};
+					6E2BD708B03425B0E237CFB8 = {
+						DevelopmentTeam = YOUR_TEAM_ID;
 						ProvisioningStyle = Automatic;
 					};
 					D576D9DBC98A12CB949CCDC2 = {
+						DevelopmentTeam = YOUR_TEAM_ID;
 						ProvisioningStyle = Automatic;
 						TestTargetID = 6E2BD708B03425B0E237CFB8;
 					};
@@ -221,7 +236,6 @@
 			mainGroup = D46A6EC197FA07D0A3B2E3B3;
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
-				5EF94C673A8B32994D84E2D0 /* XCRemoteSwiftPackageReference "DotEnv" */,
 				E58BE0FECA0520518A94246E /* XCRemoteSwiftPackageReference "supabase-swift" */,
 			);
 			preferredProjectObjectVersion = 54;
@@ -291,8 +305,8 @@
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = YOUR_TEAM_ID;
 				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 18.5;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -313,8 +327,8 @@
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = YOUR_TEAM_ID;
 				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 18.5;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -334,13 +348,11 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGNING_ALLOWED = NO;
-				CODE_SIGNING_REQUIRED = NO;
-				CODE_SIGN_IDENTITY = "";
+				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = YOUR_TEAM_ID;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 18.5;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -355,6 +367,7 @@
 		};
 		6C3ABF493CBE8436C81A202A /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 93B754AA08A6981179535F05 /* Debug.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_NONNULL = YES;
@@ -387,9 +400,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -404,15 +415,11 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 18.5;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
-				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
-				SWIFT_VERSION = 5.0;
 			};
 			name = Debug;
 		};
@@ -422,8 +429,8 @@
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = YOUR_TEAM_ID;
 				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 18.5;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -444,8 +451,8 @@
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = YOUR_TEAM_ID;
 				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 18.5;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -468,9 +475,9 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = YOUR_TEAM_ID;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 18.5;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -485,6 +492,7 @@
 		};
 		D78904EEB51211BDFEEA1607 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 6BA033346ED4CCCFC27AEEB4 /* Release.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_NONNULL = YES;
@@ -517,7 +525,6 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
@@ -528,14 +535,11 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 18.5;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
 				SWIFT_COMPILATION_MODE = wholemodule;
-				SWIFT_OPTIMIZATION_LEVEL = "-O";
-				SWIFT_VERSION = 5.0;
 			};
 			name = Release;
 		};
@@ -581,14 +585,6 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		5EF94C673A8B32994D84E2D0 /* XCRemoteSwiftPackageReference "DotEnv" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/swiftpackages/DotEnv.git";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 3.0.0;
-			};
-		};
 		E58BE0FECA0520518A94246E /* XCRemoteSwiftPackageReference "supabase-swift" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/supabase-community/supabase-swift.git";
@@ -604,11 +600,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = E58BE0FECA0520518A94246E /* XCRemoteSwiftPackageReference "supabase-swift" */;
 			productName = Supabase;
-		};
-		F420741C5AE52A10A3690F92 /* DotEnv */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 5EF94C673A8B32994D84E2D0 /* XCRemoteSwiftPackageReference "DotEnv" */;
-			productName = DotEnv;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
