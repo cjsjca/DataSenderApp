@@ -1,147 +1,19 @@
 
-🚀 Claude Web Interface Server (with PTY support)
+> my-claude-web@1.0.0 start
+> node server.js
+
+
+🚀 Claude Web Interface with MCP Support
 📍 Running at: http://localhost:3000
 🔧 Health check: http://localhost:3000/health
 
+📡 Using MCP endpoint: design-server
 ✅ Using subscription-authenticated Claude CLI from ~/.claude
-✅ Using node-pty for proper TTY emulation
-⚠️  Make sure you've run 'claude --dangerously-skip-permissions' once interactively
 
-Received request: { text: 'Say hello' }
-Attempt 1 of 4
-Spawning Claude CLI with prompt: "Say hello"
-PTY data chunk: {"type":"result","subtype":"success","is_error":false,"duration_ms":2840,"duration_api_ms":3899,"num_turns":1,"result":"Hello! I'm here to help with your DataSenderApp project. What would you like to work on today?","session_id":"6103af44-2763-4081-92af-053c2124ceda","total_cost_usd":0.08975879999999999,"usage":{"input_tokens":4,"cache_creation_input_tokens":3798,"cache_read_input_tokens":10491,"output_tokens":35,"server_tool_use":{"web_search_requests":0},"service_tier":"standard"}}
+⚠️  Make sure MCP server is running:
+    claude mcp serve --transport http --port 9090 --dangerously-skip-permissions
 
-Successfully parsed JSON: {
-  type: 'result',
-  subtype: 'success',
-  is_error: false,
-  duration_ms: 2840,
-  duration_api_ms: 3899,
-  num_turns: 1,
-  result: "Hello! I'm here to help with your DataSenderApp project. What would you like to work on today?",
-  session_id: '6103af44-2763-4081-92af-053c2124ceda',
-  total_cost_usd: 0.08975879999999999,
-  usage: {
-    input_tokens: 4,
-    cache_creation_input_tokens: 3798,
-    cache_read_input_tokens: 10491,
-    output_tokens: 35,
-    server_tool_use: { web_search_requests: 0 },
-    service_tier: 'standard'
-  }
-}
-Successfully got completion from Claude
-PTY data chunk: [?25h[?25h
-Successfully parsed JSON: {
-  type: 'result',
-  subtype: 'success',
-  is_error: false,
-  duration_ms: 2840,
-  duration_api_ms: 3899,
-  num_turns: 1,
-  result: "Hello! I'm here to help with your DataSenderApp project. What would you like to work on today?",
-  session_id: '6103af44-2763-4081-92af-053c2124ceda',
-  total_cost_usd: 0.08975879999999999,
-  usage: {
-    input_tokens: 4,
-    cache_creation_input_tokens: 3798,
-    cache_read_input_tokens: 10491,
-    output_tokens: 35,
-    server_tool_use: { web_search_requests: 0 },
-    service_tier: 'standard'
-  }
-}
-PTY process exited with code: [object Object]
-Received request: { text: 'hello' }
-Attempt 1 of 4
-Spawning Claude CLI with prompt: "hello"
-PTY data chunk: {"type":"result","subtype":"success","is_error":false,"duration_ms":2641,"duration_api_ms":2630,"num_turns":1,"result":"Hello! How can I help you today?","session_id":"242c90a5-b8bc-47c1-91cb-2febe3103b7e","total_cost_usd":0.0332085,"usage":{"input_tokens":4,"cache_creation_input_tokens":614,"cache_read_input_tokens":13674,"output_tokens":15,"server_tool_use":{"web_search_requests":0},"service_tier":"standard"}}
+⚠️  Make sure endpoints are registered:
+    claude mcp add --transport http design-server http://127.0.0.1:9090
+    claude mcp add --transport http exec-server http://127.0.0.1:9090
 
-Successfully parsed JSON: {
-  type: 'result',
-  subtype: 'success',
-  is_error: false,
-  duration_ms: 2641,
-  duration_api_ms: 2630,
-  num_turns: 1,
-  result: 'Hello! How can I help you today?',
-  session_id: '242c90a5-b8bc-47c1-91cb-2febe3103b7e',
-  total_cost_usd: 0.0332085,
-  usage: {
-    input_tokens: 4,
-    cache_creation_input_tokens: 614,
-    cache_read_input_tokens: 13674,
-    output_tokens: 15,
-    server_tool_use: { web_search_requests: 0 },
-    service_tier: 'standard'
-  }
-}
-Successfully got completion from Claude
-PTY data chunk: [?25h[?25h
-Successfully parsed JSON: {
-  type: 'result',
-  subtype: 'success',
-  is_error: false,
-  duration_ms: 2641,
-  duration_api_ms: 2630,
-  num_turns: 1,
-  result: 'Hello! How can I help you today?',
-  session_id: '242c90a5-b8bc-47c1-91cb-2febe3103b7e',
-  total_cost_usd: 0.0332085,
-  usage: {
-    input_tokens: 4,
-    cache_creation_input_tokens: 614,
-    cache_read_input_tokens: 13674,
-    output_tokens: 15,
-    server_tool_use: { web_search_requests: 0 },
-    service_tier: 'standard'
-  }
-}
-PTY process exited with code: [object Object]
-Received request: { text: 'hello' }
-Attempt 1 of 4
-Spawning Claude CLI with prompt: "hello"
-PTY data chunk: {"type":"result","subtype":"success","is_error":false,"duration_ms":2716,"duration_api_ms":3610,"num_turns":1,"result":"Hello! How can I help you today?","session_id":"e2538c1c-dd80-4cf3-9036-2a048663dcfd","total_cost_usd":0.26919025,"usage":{"input_tokens":4,"cache_creation_input_tokens":14287,"cache_read_input_tokens":0,"output_tokens":15,"server_tool_use":{"web_search_requests":0},"service_tier":"standard"}}
-
-Successfully parsed JSON: {
-  type: 'result',
-  subtype: 'success',
-  is_error: false,
-  duration_ms: 2716,
-  duration_api_ms: 3610,
-  num_turns: 1,
-  result: 'Hello! How can I help you today?',
-  session_id: 'e2538c1c-dd80-4cf3-9036-2a048663dcfd',
-  total_cost_usd: 0.26919025,
-  usage: {
-    input_tokens: 4,
-    cache_creation_input_tokens: 14287,
-    cache_read_input_tokens: 0,
-    output_tokens: 15,
-    server_tool_use: { web_search_requests: 0 },
-    service_tier: 'standard'
-  }
-}
-Successfully got completion from Claude
-PTY data chunk: [?25h[?25h
-Successfully parsed JSON: {
-  type: 'result',
-  subtype: 'success',
-  is_error: false,
-  duration_ms: 2716,
-  duration_api_ms: 3610,
-  num_turns: 1,
-  result: 'Hello! How can I help you today?',
-  session_id: 'e2538c1c-dd80-4cf3-9036-2a048663dcfd',
-  total_cost_usd: 0.26919025,
-  usage: {
-    input_tokens: 4,
-    cache_creation_input_tokens: 14287,
-    cache_read_input_tokens: 0,
-    output_tokens: 15,
-    server_tool_use: { web_search_requests: 0 },
-    service_tier: 'standard'
-  }
-}
-PTY process exited with code: [object Object]
