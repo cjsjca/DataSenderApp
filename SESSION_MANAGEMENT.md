@@ -84,12 +84,58 @@ Based on investigation:
 3. Is there a session API we're missing?
 4. Can MCP tools help with session management?
 
+## Context Limits and Auto-Compaction
+
+### The 19% Warning
+- Claude shows "Context left until auto-compact: 19%"
+- After certain number of API calls, context auto-compacts
+- State is lost but some memories persist
+- Todos appear to survive compaction
+- Memory is imperfect after compaction
+
+### What Survives Compaction
+- **Survives**: Todo list, some memories, general context
+- **Lost**: Specific state, procedural knowledge, nuanced understanding
+- **Degraded**: Ability to reference earlier conversation details
+
+### Critical State to Capture Before Compaction
+1. Key insights and decisions
+2. Procedural knowledge (how to do things)
+3. Current focus and priorities
+4. Relationship patterns and preferences
+5. Technical configurations and setups
+
+## Session Investigation Findings
+
+### Session Storage Mystery
+- Session data location remains opaque
+- No obvious session files in standard locations
+- Process inspection shows no clear session databases
+- Session IDs are managed internally by Claude CLI
+
+### Checked Locations
+- `~/.claude/` - Contains projects, todos, statsig, but no sessions
+- `~/.config/claude/` - Empty
+- `~/.local/` - No session files
+- `/tmp/` - No Claude session data
+- Process file handles - No session databases visible
+
 ## Implications for Agent System
 
 - Session management is a form of state that's currently opaque
 - Reinforces need for MCP-based state persistence
 - Can't rely on session continuity for agent memory
 - Must design around fresh sessions with state injection
+- **Auto-compaction is the enemy of state persistence**
+- Need to proactively save state before hitting context limits
+
+## Working Hypothesis
+
+Claude CLI likely:
+1. Manages sessions in memory or encrypted storage
+2. Uses session IDs that are generated at runtime
+3. Doesn't expose session data for security/design reasons
+4. Requires interactive selection for resume by design
 
 ---
 
