@@ -1,0 +1,13 @@
+// Release.xcconfig
+// Release-specific configuration
+
+#include "Base.xcconfig"
+
+// Release Settings
+ENABLE_TESTABILITY = NO
+DEBUG_INFORMATION_FORMAT = dwarf-with-dsym
+SWIFT_OPTIMIZATION_LEVEL = -O
+VALIDATE_PRODUCT = YES
+
+// Code Signing for Release
+CODE_SIGN_STYLE = Automatic

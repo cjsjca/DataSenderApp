@@ -52,10 +52,10 @@ DataSenderApp is a SwiftUI iOS application that provides a seamless interface fo
    cd DataSenderApp
    ```
 
-2. **Set up environment variables**
+2. **Set up Supabase credentials**
    ```bash
-   cp .env.example .env
-   # Edit .env with your actual credentials
+   cp Config/Secrets.xcconfig.example Config/Secrets.xcconfig
+   # Edit Secrets.xcconfig with your actual Supabase URL and key
    ```
 
 3. **Generate the Xcode project**
@@ -66,7 +66,6 @@ DataSenderApp is a SwiftUI iOS application that provides a seamless interface fo
 4. **Dependencies**
    - Swift Package Manager dependencies are defined in `project.yml`:
      - [Supabase Swift](https://github.com/supabase-community/supabase-swift)
-     - [DotEnvSwift](https://github.com/swiftpackages/DotEnv)
 
 5. **Build and run**
    - Use the xcodebuild commands from the Code-First Project Setup section
@@ -295,26 +294,22 @@ xcodebuild test -scheme DataSenderApp -destination 'platform=iOS Simulator,name=
 
 ## Secrets Setup
 
-1. **Create `.env` file**
+1. **Create `Secrets.xcconfig` file**
    ```bash
-   cp .env.example .env
+   cp Config/Secrets.xcconfig.example Config/Secrets.xcconfig
    ```
 
-2. **Add your credentials**
-   ```env
-   # Supabase Configuration
-   SUPABASE_URL=https://your-project.supabase.co
-   SUPABASE_KEY=your-anon-public-key
-   SUPABASE_ACCESS_TOKEN=your-personal-access-token
-   SUPABASE_PROJECT_REF=your-project-ref
-   
-   # GitHub Configuration
-   GITHUB_TOKEN=your-github-personal-access-token
+2. **Add your Supabase credentials**
+   ```xcconfig
+   // Supabase Configuration
+   SUPABASE_URL = https://your-project.supabase.co
+   SUPABASE_KEY = your-anon-public-key
    ```
 
-3. **Never commit `.env` file**
+3. **Never commit `Secrets.xcconfig` file**
    - Already included in `.gitignore`
-   - Use environment variables in CI/CD
+   - Credentials are baked into the build via Info.plist
+   - For CI/CD, use environment variables for optional tokens
 
 ## Contributing
 

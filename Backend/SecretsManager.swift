@@ -1,71 +1,63 @@
 import Foundation
-import DotEnv
 
 public class SecretsManager {
     
-    static let shared: SecretsManager = {
-        // Load environment variables at startup
-        let fileManager = FileManager.default
-        let currentPath = fileManager.currentDirectoryPath
-        let envPath = "\(currentPath)/.env"
-        
-        if fileManager.fileExists(atPath: envPath) {
-            do {
-                try DotEnv.load(path: envPath)
-            } catch {
-                print("Warning: Could not load .env file: \(error). Using system environment variables.")
-            }
-        } else {
-            print("Notice: No .env file found at \(envPath). Using system environment variables.")
-        }
-        return SecretsManager()
-    }()
+    static let shared = SecretsManager()
     
     private init() {
-        // Force initialization on app startup
+        // No longer need to load .env files
+        // Secrets are now baked into the build via xcconfig
     }
     
     // MARK: - Supabase Configuration
     
     static var supabaseUrl: String {
-        guard let value = ProcessInfo.processInfo.environment["SUPABASE_URL"] else {
+        guard let value = Bundle.main.object(forInfoDictionaryKey: "SUPABASE_URL") as? String,
+              !value.isEmpty,
+              value != "$(SUPABASE_URL)" else {
             #if DEBUG
             return "https://example.supabase.co"  // Placeholder for development
             #else
-            fatalError("Missing SUPABASE_URL in environment. Please check your .env file or environment variables.")
+            fatalError("Missing SUPABASE_URL in Info.plist. Please check your Config/Secrets.xcconfig file.")
             #endif
         }
         return value
     }
     
     static var supabaseKey: String {
-        guard let value = ProcessInfo.processInfo.environment["SUPABASE_KEY"] else {
+        guard let value = Bundle.main.object(forInfoDictionaryKey: "SUPABASE_KEY") as? String,
+              !value.isEmpty,
+              value != "$(SUPABASE_KEY)" else {
             #if DEBUG
             return "placeholder-key"  // Placeholder for development
             #else
-            fatalError("Missing SUPABASE_KEY in environment. Please check your .env file or environment variables.")
+            fatalError("Missing SUPABASE_KEY in Info.plist. Please check your Config/Secrets.xcconfig file.")
             #endif
         }
         return value
     }
     
+    // MARK: - Optional Properties (still from environment for CI/CD)
+    
     static var supabaseProjectRef: String {
+        // This can remain as environment variable for CI/CD purposes
         guard let value = ProcessInfo.processInfo.environment["SUPABASE_PROJECT_REF"] else {
             #if DEBUG
             return "placeholder-ref"  // Placeholder for development
             #else
-            fatalError("Missing SUPABASE_PROJECT_REF in environment. Please check your .env file or environment variables.")
+            return ""  // Optional for device builds
             #endif
         }
         return value
     }
     
     static var supabaseAccessToken: String {
+        // This can remain as environment variable for CI/CD purposes
         guard let value = ProcessInfo.processInfo.environment["SUPABASE_ACCESS_TOKEN"] else {
             #if DEBUG
             return "placeholder-token"  // Placeholder for development
             #else
-            fatalError("Missing SUPABASE_ACCESS_TOKEN in environment. Please check your .env file or environment variables.")
+            return ""  // Optional for device builds
             #endif
         }
         return value
@@ -74,11 +66,12 @@ public class SecretsManager {
     // MARK: - GitHub Configuration
     
     static var githubToken: String {
+        // This can remain as environment variable for CI/CD purposes
         guard let value = ProcessInfo.processInfo.environment["GITHUB_TOKEN"] else {
             #if DEBUG
             return "placeholder-github-token"  // Placeholder for development
             #else
-            fatalError("Missing GITHUB_TOKEN in environment. Please check your .env file or environment variables.")
+            return ""  // Optional for device builds
             #endif
         }
         return value

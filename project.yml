@@ -5,13 +5,9 @@ options:
   createIntermediateGroups: true
   bundleIdPrefix: com.cjsjca
 
-configs:
-  Debug:
-    xcconfig:
-      ENABLE_TESTABILITY: YES
-  Release:
-    xcconfig:
-      ENABLE_TESTABILITY: NO
+configFiles:
+  Debug: Config/Debug.xcconfig
+  Release: Config/Release.xcconfig
 
 targets:
   DataSenderApp:
@@ -59,7 +55,6 @@ targets:
         NSPhotoLibraryUsageDescription: "This app needs access to photo library to save photos."
     dependencies:
       - package: Supabase
-      - package: DotEnv
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.cjsjca.DataSenderApp
@@ -124,9 +119,6 @@ packages:
   Supabase:
     url: https://github.com/supabase-community/supabase-swift.git
     from: 2.30.0
-  DotEnv:
-    url: https://github.com/swiftpackages/DotEnv.git
-    from: 3.0.0
 
 schemes:
   DataSenderApp:

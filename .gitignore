@@ -94,6 +94,9 @@ iOSInjectionProject/
 .env.local
 .env.*.local
 
+# Secret configuration files
+Config/Secrets.xcconfig
+
 # MCP Configuration with secrets
 Backend/MCP/.mcp.json
 .mcp.json

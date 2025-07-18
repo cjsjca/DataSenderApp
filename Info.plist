@@ -26,6 +26,10 @@
 	<string>This app needs access to microphone to record audio.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>This app needs access to photo library to save photos.</string>
+	<key>SUPABASE_URL</key>
+	<string>$(SUPABASE_URL)</string>
+	<key>SUPABASE_KEY</key>
+	<string>$(SUPABASE_KEY)</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>
