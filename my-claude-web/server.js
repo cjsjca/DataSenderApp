@@ -1,13 +1,14 @@
 const express = require('express');
-const { spawn } = require('child_process');
 const path = require('path');
+// Node 18+ has fetch built-in. For older versions, use: const fetch = require('node-fetch');
 
 // Initialize Express app
 const app = express();
 const PORT = process.env.PORT || 3000;
 
 // MCP endpoint configuration - change this to use different endpoints
-const MCP_ENDPOINT = 'design-server'; // or 'exec-server' for execution tasks
+const MCP_ENDPOINT = process.env.MCP_ENDPOINT || 'design-server';
+const MCP_SERVER_URL = 'http://127.0.0.1:9090';
 
 // Middleware setup - MUST be before routes
 app.use(express.json()); // Parse JSON request bodies
@@ -18,101 +19,48 @@ app.get('/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
-// Function to call Claude via MCP
-async function callClaudeMCP(promptText) {
-  return new Promise((resolve, reject) => {
-    console.log(`Calling Claude MCP with prompt: "${promptText}"`);
-    
-    // Spawn Claude MCP call command
-    const claude = spawn('/opt/homebrew/bin/claude', [
-      'mcp',
-      'call',
-      MCP_ENDPOINT,
-      '-p',
-      promptText,
-      '--output-format',
-      'json'
-    ], {
-      env: process.env, // Inherit all environment variables
-      stdio: ['pipe', 'pipe', 'pipe'] // Pipe stdin, stdout, stderr
-    });
-    
-    let stdoutBuffer = '';
-    let stderrBuffer = '';
-    let hasResolved = false;
-    
-    // Handle stdout data
-    claude.stdout.on('data', (chunk) => {
-      stdoutBuffer += chunk.toString();
-      console.log('MCP stdout chunk:', chunk.toString());
-    });
-    
-    // Handle stderr data
-    claude.stderr.on('data', (chunk) => {
-      const data = chunk.toString();
-      stderrBuffer += data;
-      console.error('MCP stderr:', data);
-    });
-    
-    // Handle process exit
-    claude.on('close', (code) => {
-      if (!hasResolved) {
-        console.log(`MCP process exited with code: ${code}`);
-        
-        if (code === 0 && stdoutBuffer) {
-          // Try to parse JSON response
-          try {
-            const trimmed = stdoutBuffer.trim();
-            const parsed = JSON.parse(trimmed);
-            console.log('Successfully parsed MCP JSON response');
-            
-            // Extract completion from various possible fields
-            const completion = parsed.result || 
-                             parsed.completion || 
-                             parsed.content || 
-                             parsed.output || 
-                             parsed.response ||
-                             '';
-            
-            hasResolved = true;
-            resolve(completion);
-          } catch (e) {
-            console.error('Failed to parse JSON:', e);
-            reject(new Error('Invalid JSON response from Claude MCP'));
-          }
-        } else if (stderrBuffer.toLowerCase().includes('overloaded')) {
-          reject(new Error('OVERLOADED'));
-        } else {
-          reject(new Error(`Claude MCP exited with code ${code}: ${stderrBuffer || 'No error output'}`));
-        }
+// Function to call Claude via MCP HTTP JSON-RPC
+async function callClaudeMCP(prompt) {
+  console.log(`Calling MCP server with prompt: "${prompt}"`);
+  
+  const response = await fetch(MCP_SERVER_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      jsonrpc: '2.0',
+      id: Date.now().toString(),
+      method: 'chat.completions.create',
+      params: {
+        model: 'claude-2',
+        messages: [{ role: 'user', content: prompt }],
+        endpoint: MCP_ENDPOINT
       }
-    });
-    
-    // Handle process errors
-    claude.on('error', (error) => {
-      console.error('MCP spawn error:', error);
-      if (!hasResolved) {
-        hasResolved = true;
-        reject(new Error(`Failed to spawn Claude MCP: ${error.message}`));
-      }
-    });
-    
-    // Set a timeout to prevent hanging forever
-    setTimeout(() => {
-      if (!hasResolved) {
-        console.log('Timeout reached, killing MCP process');
-        hasResolved = true;
-        claude.kill('SIGTERM');
-        // Force kill after 5 more seconds if needed
-        setTimeout(() => {
-          if (claude.exitCode === null) {
-            claude.kill('SIGKILL');
-          }
-        }, 5000);
-        reject(new Error('Claude MCP timed out after 30 seconds'));
-      }
-    }, 30000); // 30 second timeout
+    })
   });
+  
+  const data = await response.json();
+  console.log('MCP server response:', JSON.stringify(data, null, 2));
+  
+  if (data.error) {
+    // Check for overloaded error
+    if (data.error.message && data.error.message.toLowerCase().includes('overloaded')) {
+      throw new Error('OVERLOADED');
+    }
+    throw new Error(data.error.message || JSON.stringify(data.error));
+  }
+  
+  // Extract completion from various possible response formats
+  if (data.result?.choices?.[0]?.message?.content) {
+    return data.result.choices[0].message.content;
+  } else if (data.result?.completion) {
+    return data.result.completion;
+  } else if (data.result?.content) {
+    return data.result.content;
+  } else if (typeof data.result === 'string') {
+    return data.result;
+  }
+  
+  throw new Error('Unexpected response format from MCP server');
 }
 
 // Function to call Claude with retry logic
@@ -138,7 +86,7 @@ async function callClaudeWithRetry(promptText, maxRetries = 3) {
       // Check if it's an overloaded error
       if (error.message === 'OVERLOADED' || 
           (error.message && error.message.toLowerCase().includes('overloaded'))) {
-        console.log('Claude API overloaded, will retry...');
+        console.log('MCP server overloaded, will retry...');
         // Continue to next retry unless we're out of attempts
         if (attempt === maxRetries) {
           throw new Error('SERVICE_OVERLOADED');
@@ -166,7 +114,7 @@ app.post('/api/claude', async (req, res) => {
     // Call Claude with retry logic
     const completion = await callClaudeWithRetry(text);
     
-    console.log('Successfully got completion from Claude MCP');
+    console.log('Successfully got completion from MCP server');
     
     // Send response
     res.json({ completion });
@@ -200,8 +148,9 @@ app.listen(PORT, '127.0.0.1', () => {
   console.log(`\n🚀 Claude Web Interface with MCP Support`);
   console.log(`📍 Running at: http://localhost:${PORT}`);
   console.log(`🔧 Health check: http://localhost:${PORT}/health`);
-  console.log(`\n📡 Using MCP endpoint: ${MCP_ENDPOINT}`);
-  console.log(`✅ Using subscription-authenticated Claude CLI from ~/.claude`);
+  console.log(`\n📡 Using MCP server at: ${MCP_SERVER_URL}`);
+  console.log(`📡 Using MCP endpoint: ${MCP_ENDPOINT}`);
+  console.log(`✅ Using HTTP JSON-RPC to communicate with MCP server`);
   console.log(`\n⚠️  Make sure MCP server is running:`);
   console.log(`    claude mcp serve --transport http --port 9090 --dangerously-skip-permissions`);
   console.log(`\n⚠️  Make sure endpoints are registered:`);

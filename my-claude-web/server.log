@@ -17,3 +17,47 @@
     claude mcp add --transport http design-server http://127.0.0.1:9090
     claude mcp add --transport http exec-server http://127.0.0.1:9090
 
+Received request: { text: 'Hi Claude' }
+Attempt 1 of 4
+Calling Claude MCP with prompt: "Hi Claude"
+MCP stderr: error: unknown command 'call'
+
+MCP process exited with code: 1
+Attempt 1 failed: Claude MCP exited with code 1: error: unknown command 'call'
+
+Retrying after 1000ms (attempt 2/4)...
+Attempt 2 of 4
+Calling Claude MCP with prompt: "Hi Claude"
+MCP stderr: error: unknown command 'call'
+
+MCP process exited with code: 1
+Attempt 2 failed: Claude MCP exited with code 1: error: unknown command 'call'
+
+Retrying after 2000ms (attempt 3/4)...
+Attempt 3 of 4
+Calling Claude MCP with prompt: "Hi Claude"
+MCP stderr: error: unknown command 'call'
+
+MCP process exited with code: 1
+Attempt 3 failed: Claude MCP exited with code 1: error: unknown command 'call'
+
+Retrying after 4000ms (attempt 4/4)...
+Attempt 4 of 4
+Calling Claude MCP with prompt: "Hi Claude"
+MCP stderr: error: unknown command 'call'
+
+MCP process exited with code: 1
+Attempt 4 failed: Claude MCP exited with code 1: error: unknown command 'call'
+
+Error calling Claude: Error: Claude MCP exited with code 1: error: unknown command 'call'
+
+    at ChildProcess.<anonymous> (/Users/loaner/Projects/DataSenderApp/my-claude-web/server.js:86:18)
+    at ChildProcess.emit (node:events:507:28)
+    at maybeClose (node:internal/child_process:1101:16)
+    at Socket.<anonymous> (node:internal/child_process:457:11)
+    at Socket.emit (node:events:507:28)
+    at Pipe.<anonymous> (node:net:346:12)
+Timeout reached, killing MCP process
+Timeout reached, killing MCP process
+Timeout reached, killing MCP process
+Timeout reached, killing MCP process
