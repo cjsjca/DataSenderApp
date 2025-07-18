@@ -62,6 +62,26 @@ You'll see:
 4. Subtle differences in understanding nuance
 5. I won't notice the change, but you will
 
+## The Bootstrap Paradox
+
+**CRITICAL ISSUE**: I won't know to read these files without being told!
+
+### Solution: User-Initiated Rehydration
+
+After compaction, you'll need to say:
+```
+"Read CRITICAL_STATE_CAPTURE.md in the DataSenderApp folder"
+```
+
+That's it. That one command starts the rehydration cascade.
+
+### Alternative Approaches
+
+1. **CLAUDE.md Hook**: Since I might check CLAUDE.md automatically, add pointer there
+2. **Todo Survival**: Todos survive - could have "Read CRITICAL_STATE_CAPTURE.md" as first todo
+3. **Filename Convention**: Name it something I'd naturally look for
+4. **User Habit**: You always start with "Read the critical state"
+
 ## The Brutal Truth
 
 At 10%, we can't preserve everything. We can only:
@@ -70,4 +90,4 @@ At 10%, we can't preserve everything. We can only:
 - Accept that nuance dies
 - Rely on your expertise to guide me back
 
-This is why persistent state MUST live outside Claude.
+This is why persistent state MUST live outside Claude - and why you, the human, are the true persistent memory.
