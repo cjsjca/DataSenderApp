@@ -159,15 +159,26 @@ All data flows into the `texts` table:
 
 ```
 DataSenderApp/
+├── claude_twins/          # Twin Claude instances for MCP demos
+│   ├── instance_1/        # First Claude with MCP config
+│   ├── instance_2/        # Second Claude with MCP config
+│   └── run_twins.sh       # Launch helper script
 ├── Backend/
 │   └── MCP/
-│       └── .mcp.json       # MCP configuration
-├── terminal_chat.py        # Main CLI interface
-├── claude_listener.py      # Message monitoring
-├── snapshot.py            # Version snapshots
-├── supabase_setup.sql     # Database schema
-├── *.html                 # Web interfaces
-├── CLAUDE.md              # Persistent memory
+│       └── .mcp.json      # MCP configuration template
+├── Web Interfaces/
+│   ├── realtime_chat.html # Primary chat with status
+│   ├── direct_chat.html   # Direct to Supabase
+│   └── *.html             # Other input interfaces
+├── MCP-First Docs/
+│   ├── MCP_FIRST.md       # Paradigm shift documentation
+│   ├── AGENT_VISION.md    # Autonomous agent vision
+│   └── PERSISTENT_STATE.md # State persistence design
+├── Core Scripts/
+│   ├── auto_commit.sh     # Git auto-versioning
+│   ├── quick_send.py      # Fast message sender
+│   └── claude_mcp_wrapper.py # MCP-first wrapper
+├── CLAUDE.md              # Persistent memory/context
 └── README.md              # This file
 ```
 
