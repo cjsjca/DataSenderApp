@@ -30,49 +30,26 @@ async function executeClaudeWithRetry(command, options, maxRetries = 3) {
         await new Promise(resolve => setTimeout(resolve, delay));
       }
       
-      // Execute command using spawn for better control
+      // Execute command
       const result = await new Promise((resolve, reject) => {
-        const { spawn } = require('child_process');
-        // Extract the text from the command string
-        const textMatch = command.match(/-p "(.*?)" --output-format/);
-        const text = textMatch ? textMatch[1] : '';
-        const args = ['--dangerously-skip-permissions', '-p', text, '--output-format', 'json'];
-        const claude = spawn('/opt/homebrew/bin/claude', args, options);
-        
-        let stdout = '';
-        let stderr = '';
-        
-        claude.stdout.on('data', (data) => {
-          stdout += data.toString();
-        });
-        
-        claude.stderr.on('data', (data) => {
-          stderr += data.toString();
-        });
-        
-        claude.on('close', (code) => {
-          console.log(`Attempt ${attempt + 1} - Exit code: ${code}, stderr: ${stderr}, stdout: ${stdout}`);
+        exec(command, options, (error, stdout, stderr) => {
+          console.log(`Attempt ${attempt + 1} - CLI err:`, error, 'stderr:', stderr, 'stdout:', stdout);
           
           // Check for overloaded error
-          if (code !== 0 || stderr) {
-            const errorMessage = stderr || '';
+          if (error || stderr) {
+            const errorMessage = (error?.message || '') + (stderr || '');
             if (errorMessage.toLowerCase().includes('overloaded')) {
               reject(new Error('OVERLOADED'));
               return;
             }
           }
           
-          if (code !== 0) {
-            reject(new Error(`Claude exited with code ${code}`));
+          if (error) {
+            reject(error);
           } else {
             resolve({ stdout, stderr });
           }
         });
-        
-        // Kill the process after 20 seconds if it hasn't completed
-        setTimeout(() => {
-          claude.kill('SIGTERM');
-        }, 20000);
       });
       
       // If we got here, command succeeded
