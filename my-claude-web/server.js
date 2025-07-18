@@ -9,6 +9,7 @@ const PORT = process.env.PORT || 3000;
 
 // Middleware setup
 app.use(bodyParser.json());
+app.use(express.json()); // Also support express.json() 
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Health check endpoint
@@ -16,10 +17,61 @@ app.get('/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
+// Helper function to execute Claude with retry logic
+async function executeClaudeWithRetry(command, options, maxRetries = 3) {
+  const delays = [1000, 2000, 4000]; // Exponential backoff delays
+  
+  for (let attempt = 0; attempt <= maxRetries; attempt++) {
+    try {
+      // Wait before retry (skip on first attempt)
+      if (attempt > 0) {
+        const delay = delays[attempt - 1];
+        console.log(`Retry attempt ${attempt}/${maxRetries} after ${delay}ms delay...`);
+        await new Promise(resolve => setTimeout(resolve, delay));
+      }
+      
+      // Execute command
+      const result = await new Promise((resolve, reject) => {
+        exec(command, options, (error, stdout, stderr) => {
+          console.log(`Attempt ${attempt + 1} - CLI err:`, error, 'stderr:', stderr, 'stdout:', stdout);
+          
+          // Check for overloaded error
+          if (error || stderr) {
+            const errorMessage = (error?.message || '') + (stderr || '');
+            if (errorMessage.toLowerCase().includes('overloaded')) {
+              reject(new Error('OVERLOADED'));
+              return;
+            }
+          }
+          
+          if (error) {
+            reject(error);
+          } else {
+            resolve({ stdout, stderr });
+          }
+        });
+      });
+      
+      // If we got here, command succeeded
+      return result;
+      
+    } catch (error) {
+      // If it's not an overloaded error or we're out of retries, throw
+      if (error.message !== 'OVERLOADED' || attempt === maxRetries) {
+        throw error;
+      }
+      // Otherwise, continue to next retry
+    }
+  }
+}
+
 // Main Claude API endpoint
-app.post('/api/claude', (req, res) => {
+app.post('/api/claude', async (req, res) => {
   console.log('=> got:', req.body);
   const { text } = req.body;
+  
+  // Set request timeout to 35 seconds
+  req.setTimeout(35000);
   
   // Validate input
   if (!text) {
@@ -27,47 +79,57 @@ app.post('/api/claude', (req, res) => {
   }
 
   // Escape quotes and special characters for shell command
-  const escapedText = text.replace(/"/g, '\\"').replace(/\$/g, '\\$');
+  const escapedText = text.replace(/"/g, '\\"').replace(/\$/g, '\\$').replace(/`/g, '\\`');
   
   // Execute Claude CLI in print mode with JSON output
-  // Note: Requires ANTHROPIC_API_KEY environment variable or authenticated CLI session
+  // Uses existing authenticated CLI session from ~/.claude
   const command = `claude -p "${escapedText}" --output-format json`;
   
-  // Set timeout for long-running requests
+  // Set execution timeout to 25 seconds (less than request timeout)
   const options = {
-    timeout: 60000, // 60 seconds
+    timeout: 25000,
     maxBuffer: 1024 * 1024 * 10 // 10MB buffer
   };
   
   console.log('Executing command:', command);
   
-  exec(command, options, (error, stdout, stderr) => {
-    console.log('Command completed');
-    console.log('Error:', error);
-    console.log('Stdout:', stdout);
-    console.log('Stderr:', stderr);
+  try {
+    // Execute with retry logic
+    const { stdout, stderr } = await executeClaudeWithRetry(command, options);
     
-    if (error) {
-      console.error('Claude execution error:', error.message);
-      console.error('stderr:', stderr);
-      return res.status(500).json({ 
-        error: stderr || error.message || 'Failed to execute Claude CLI' 
-      });
-    }
-
+    // Parse JSON response from Claude
     try {
-      // Parse JSON response from Claude
       const response = JSON.parse(stdout);
-      const completion = response.completion || response.content || '';
+      const completion = response.result || response.completion || response.content || '';
       
       res.json({ completion });
     } catch (parseError) {
       console.error('JSON parse error:', parseError);
-      console.error('stdout:', stdout);
-      // If JSON parsing fails, return raw output
-      res.json({ completion: stdout });
+      console.error('stdout was:', stdout);
+      // If JSON parsing fails but we have output, return it as-is
+      if (stdout.trim()) {
+        res.json({ completion: stdout });
+      } else {
+        res.status(500).json({ error: 'Failed to parse Claude response' });
+      }
     }
-  });
+    
+  } catch (error) {
+    console.error('Final error after retries:', error);
+    
+    // Check if it was an overloaded error
+    const errorMessage = (error?.message || '') + (error?.stderr || '');
+    if (errorMessage.toLowerCase().includes('overloaded')) {
+      return res.status(503).json({ 
+        error: 'Service overloaded, please try again later' 
+      });
+    }
+    
+    // Other errors
+    return res.status(500).json({ 
+      error: error.stderr || error.message || 'Failed to execute Claude CLI' 
+    });
+  }
 });
 
 // Error handling middleware
@@ -80,9 +142,5 @@ app.use((err, req, res, next) => {
 app.listen(PORT, '127.0.0.1', () => {
   console.log(`Claude web interface running at http://localhost:${PORT}`);
   console.log(`Health check available at http://localhost:${PORT}/health`);
-  
-  // Check if API key is set
-  if (!process.env.ANTHROPIC_API_KEY) {
-    console.warn('Warning: ANTHROPIC_API_KEY not set. Claude CLI must be authenticated via OAuth.');
-  }
+  console.log('Using subscription-authenticated Claude CLI from ~/.claude');
 });
