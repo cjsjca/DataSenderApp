@@ -170,6 +170,20 @@ This document captures key realizations and insights that emerge during developm
 
 ---
 
+## 2025-01-18: Session Continuity Requires Manual Steps
+
+**Insight**: To maintain context after restart, must use `claude --resume` and manually select the session. This operational knowledge is critical but not documented anywhere Claude can see.
+
+**Implications**:
+- Context continuity requires human knowledge/action
+- Critical operational details exist outside Claude's awareness
+- Need to document these "meta" procedures
+- Another form of state that needs persistence
+
+**Discovered while**: User mentioning the resume process before MCP restart
+
+---
+
 ## How to Use This Document
 
 1. **Capture immediately**: When an insight emerges, document it right away
