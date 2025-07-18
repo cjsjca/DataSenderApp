@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <title>Claude Realtime Chat</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+            padding: 0;
+            margin: 0;
+            background: #000;
+            color: #fff;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        #header {
+            background: #111;
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 1px solid #333;
+        }
+        
+        #status-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #666;
+            transition: all 0.3s;
+        }
+        
+        #status-indicator.connected {
+            background: #4CAF50;
+        }
+        
+        #status-indicator.thinking {
+            background: #FFC107;
+            animation: pulse 1s infinite;
+        }
+        
+        #status-indicator.error {
+            background: #F44336;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.6; transform: scale(1.2); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+        
+        #status-text {
+            font-size: 14px;
+            color: #888;
+            flex: 1;
+        }
+        
+        #interrupt-btn {
+            padding: 8px 16px;
+            background: #F44336;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 12px;
+            display: none;
+            cursor: pointer;
+        }
+        
+        #interrupt-btn.active {
+            display: block;
+        }
+        
+        #messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            -webkit-overflow-scrolling: touch;
+        }
+        
+        .message {
+            margin-bottom: 20px;
+            animation: fadeIn 0.3s;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .message-bubble {
+            padding: 12px 16px;
+            border-radius: 16px;
+            max-width: 80%;
+            word-wrap: break-word;
+        }
+        
+        .user .message-bubble {
+            background: #007AFF;
+            margin-left: auto;
+            border-bottom-right-radius: 4px;
+        }
+        
+        .claude .message-bubble {
+            background: #1c1c1e;
+            margin-right: auto;
+            border-bottom-left-radius: 4px;
+            border: 1px solid #2c2c2e;
+        }
+        
+        .message-time {
+            font-size: 11px;
+            color: #666;
+            margin-top: 4px;
+            text-align: right;
+        }
+        
+        .user .message-time {
+            text-align: right;
+        }
+        
+        .claude .message-time {
+            text-align: left;
+        }
+        
+        .thinking-indicator {
+            display: flex;
+            gap: 4px;
+            padding: 12px 16px;
+        }
+        
+        .thinking-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #666;
+            animation: thinking 1.4s infinite;
+        }
+        
+        .thinking-dot:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+        
+        .thinking-dot:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+        
+        @keyframes thinking {
+            0%, 60%, 100% { opacity: 0.3; }
+            30% { opacity: 1; }
+        }
+        
+        #input-area {
+            background: #111;
+            padding: 15px;
+            border-top: 1px solid #333;
+        }
+        
+        #input-container {
+            display: flex;
+            gap: 10px;
+            align-items: flex-end;
+        }
+        
+        #input {
+            flex: 1;
+            padding: 12px 16px;
+            font-size: 16px;
+            border: 1px solid #333;
+            border-radius: 20px;
+            background: #1c1c1e;
+            color: #fff;
+            outline: none;
+            resize: none;
+            min-height: 44px;
+            max-height: 120px;
+            line-height: 1.4;
+        }
+        
+        #input:focus {
+            border-color: #007AFF;
+        }
+        
+        #send-btn {
+            padding: 10px 20px;
+            background: #007AFF;
+            color: white;
+            border: none;
+            border-radius: 20px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+        
+        #send-btn:disabled {
+            opacity: 0.5;
+        }
+        
+        .code-block {
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 12px;
+            font-family: 'SF Mono', Monaco, monospace;
+            font-size: 14px;
+            overflow-x: auto;
+            margin: 8px 0;
+        }
+        
+        .progress-bar {
+            height: 2px;
+            background: #333;
+            position: relative;
+            overflow: hidden;
+            margin-top: 8px;
+            border-radius: 1px;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: #007AFF;
+            animation: progress 2s ease-in-out infinite;
+        }
+        
+        @keyframes progress {
+            0% { width: 0%; }
+            50% { width: 70%; }
+            100% { width: 100%; }
+        }
+        
+        @media (max-width: 600px) {
+            .message-bubble {
+                max-width: 90%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="header">
+        <div id="status-indicator"></div>
+        <div id="status-text">Connecting...</div>
+        <button id="interrupt-btn" onclick="interruptProcess()">Stop</button>
+    </div>
+    
+    <div id="messages"></div>
+    
+    <div id="input-area">
+        <div id="input-container">
+            <textarea id="input" 
+                placeholder="Talk to Claude..." 
+                rows="1"
+                onkeydown="handleKeyPress(event)"
+                oninput="autoResize(this)"></textarea>
+            <button id="send-btn" onclick="sendMessage()">Send</button>
+        </div>
+    </div>
+    
+    <script>
+    // Configuration
+    const SERVER_URL = window.location.hostname === 'localhost' 
+        ? 'http://localhost:8080' 
+        : `http://${window.location.hostname}:8080`;
+    
+    const SUPABASE_URL = 'https://xvxyzmldrqewigrrccea.supabase.co';
+    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh2eHl6bWxkcnFld2lncnJjY2VhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTI3ODY0NDUsImV4cCI6MjA2ODM2MjQ0NX0.Y6F9a-L6VUdxPdUTNZTBNvAqTWwR6i2R-ACsoZZPxyE';
+    
+    // State
+    let eventSource = null;
+    let isProcessing = false;
+    let currentProcessId = null;
+    
+    // Initialize
+    function init() {
+        connectToServer();
+        document.getElementById('input').focus();
+    }
+    
+    // Server connection
+    function connectToServer() {
+        updateStatus('connecting', 'Connecting to Claude...');
+        
+        // Try WebSocket first for bidirectional communication
+        try {
+            const ws = new WebSocket(SERVER_URL.replace('http', 'ws') + '/ws');
+            
+            ws.onopen = () => {
+                updateStatus('connected', 'Connected to Claude');
+            };
+            
+            ws.onmessage = (event) => {
+                handleServerMessage(JSON.parse(event.data));
+            };
+            
+            ws.onerror = ws.onclose = () => {
+                // Fallback to SSE
+                connectSSE();
+            };
+            
+            window.ws = ws;
+        } catch (e) {
+            // Fallback to SSE
+            connectSSE();
+        }
+    }
+    
+    function connectSSE() {
+        eventSource = new EventSource(`${SERVER_URL}/events`);
+        
+        eventSource.onopen = () => {
+            updateStatus('connected', 'Connected to Claude (SSE)');
+        };
+        
+        eventSource.onmessage = (event) => {
+            handleServerMessage(JSON.parse(event.data));
+        };
+        
+        eventSource.onerror = () => {
+            updateStatus('error', 'Connection lost. Retrying...');
+            setTimeout(connectToServer, 5000);
+        };
+    }
+    
+    // Handle server messages
+    function handleServerMessage(data) {
+        switch (data.type) {
+            case 'thinking':
+                showThinking();
+                updateStatus('thinking', 'Claude is thinking...');
+                document.getElementById('interrupt-btn').classList.add('active');
+                break;
+                
+            case 'progress':
+                updateProgress(data.message);
+                break;
+                
+            case 'response':
+                hideThinking();
+                addMessage(data.message, 'claude');
+                updateStatus('connected', 'Ready');
+                document.getElementById('interrupt-btn').classList.remove('active');
+                isProcessing = false;
+                break;
+                
+            case 'error':
+                hideThinking();
+                updateStatus('error', data.message);
+                document.getElementById('interrupt-btn').classList.remove('active');
+                isProcessing = false;
+                break;
+        }
+    }
+    
+    // Send message
+    async function sendMessage() {
+        const input = document.getElementById('input');
+        const message = input.value.trim();
+        if (!message || isProcessing) return;
+        
+        isProcessing = true;
+        currentProcessId = Date.now().toString();
+        
+        // Add to UI
+        addMessage(message, 'user');
+        input.value = '';
+        autoResize(input);
+        
+        // Save to Supabase
+        saveToSupabase(message);
+        
+        // Send to server
+        try {
+            const response = await fetch(`${SERVER_URL}/chat`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ 
+                    message: message,
+                    processId: currentProcessId 
+                })
+            });
+            
+            if (!response.ok) {
+                throw new Error('Server error');
+            }
+        } catch (error) {
+            updateStatus('error', 'Failed to send message');
+            isProcessing = false;
+        }
+    }
+    
+    // Interrupt process
+    async function interruptProcess() {
+        if (!currentProcessId) return;
+        
+        try {
+            await fetch(`${SERVER_URL}/interrupt`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ processId: currentProcessId })
+            });
+            
+            hideThinking();
+            updateStatus('connected', 'Process interrupted');
+            document.getElementById('interrupt-btn').classList.remove('active');
+            isProcessing = false;
+        } catch (error) {
+            console.error('Failed to interrupt:', error);
+        }
+    }
+    
+    // UI functions
+    function addMessage(text, type) {
+        const messages = document.getElementById('messages');
+        const time = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+        
+        const messageDiv = document.createElement('div');
+        messageDiv.className = `message ${type}`;
+        
+        // Format text
+        text = formatText(text);
+        
+        messageDiv.innerHTML = `
+            <div class="message-bubble">${text}</div>
+            <div class="message-time">${time}</div>
+        `;
+        
+        messages.appendChild(messageDiv);
+        messages.scrollTop = messages.scrollHeight;
+    }
+    
+    function formatText(text) {
+        // Code blocks
+        text = text.replace(/```(\w*)\n([\s\S]*?)```/g, (match, lang, code) => {
+            return `<div class="code-block">${escapeHtml(code.trim())}</div>`;
+        });
+        
+        // Line breaks
+        text = text.replace(/\n/g, '<br>');
+        
+        return text;
+    }
+    
+    function showThinking() {
+        hideThinking(); // Remove any existing
+        
+        const messages = document.getElementById('messages');
+        const thinkingDiv = document.createElement('div');
+        thinkingDiv.className = 'message claude thinking-message';
+        thinkingDiv.innerHTML = `
+            <div class="thinking-indicator">
+                <div class="thinking-dot"></div>
+                <div class="thinking-dot"></div>
+                <div class="thinking-dot"></div>
+            </div>
+            <div class="progress-bar" id="progress-bar" style="display: none;">
+                <div class="progress-fill"></div>
+            </div>
+        `;
+        
+        messages.appendChild(thinkingDiv);
+        messages.scrollTop = messages.scrollHeight;
+    }
+    
+    function hideThinking() {
+        const thinking = document.querySelector('.thinking-message');
+        if (thinking) thinking.remove();
+    }
+    
+    function updateProgress(message) {
+        const progressBar = document.getElementById('progress-bar');
+        if (progressBar) {
+            progressBar.style.display = 'block';
+        }
+        updateStatus('thinking', message);
+    }
+    
+    function updateStatus(state, text) {
+        const indicator = document.getElementById('status-indicator');
+        const statusText = document.getElementById('status-text');
+        
+        indicator.className = state;
+        statusText.textContent = text;
+    }
+    
+    // Save to Supabase
+    async function saveToSupabase(message) {
+        try {
+            await fetch(`${SUPABASE_URL}/rest/v1/texts`, {
+                method: 'POST',
+                headers: {
+                    'apikey': SUPABASE_KEY,
+                    'Authorization': `Bearer ${SUPABASE_KEY}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ 
+                    content: `[REALTIME_CHAT] ${message}`,
+                    metadata: {
+                        source: 'realtime_chat',
+                        timestamp: new Date().toISOString(),
+                        device: navigator.userAgent.includes('iPhone') ? 'iPhone' : 'Desktop'
+                    }
+                })
+            });
+        } catch (e) {
+            console.error('Supabase save failed:', e);
+        }
+    }
+    
+    // Utilities
+    function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+    
+    function handleKeyPress(event) {
+        if (event.key === 'Enter' && !event.shiftKey) {
+            event.preventDefault();
+            sendMessage();
+        }
+    }
+    
+    function autoResize(textarea) {
+        textarea.style.height = 'auto';
+        textarea.style.height = Math.min(textarea.scrollHeight, 120) + 'px';
+    }
+    
+    // Initialize on load
+    window.addEventListener('load', init);
+    
+    // Handle connection state
+    window.addEventListener('online', connectToServer);
+    window.addEventListener('offline', () => {
+        updateStatus('error', 'Offline - messages will be queued');
+    });
+    
+    // Prevent zoom on input focus (iOS)
+    document.addEventListener('gesturestart', (e) => e.preventDefault());
+    </script>
+</body>
+</html>
