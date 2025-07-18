@@ -1,10 +1,13 @@
 const express = require('express');
-const pty = require('node-pty');
+const { spawn } = require('child_process');
 const path = require('path');
 
 // Initialize Express app
 const app = express();
 const PORT = process.env.PORT || 3000;
+
+// MCP endpoint configuration - change this to use different endpoints
+const MCP_ENDPOINT = 'design-server'; // or 'exec-server' for execution tasks
 
 // Middleware setup - MUST be before routes
 app.use(express.json()); // Parse JSON request bodies
@@ -15,86 +18,105 @@ app.get('/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
-// Function to run Claude CLI with pseudo-TTY
-async function runClaude(promptText) {
+// Function to call Claude via MCP
+async function callClaudeMCP(promptText) {
   return new Promise((resolve, reject) => {
-    console.log(`Spawning Claude CLI with prompt: "${promptText}"`);
+    console.log(`Calling Claude MCP with prompt: "${promptText}"`);
     
-    // Spawn Claude with a pseudo-TTY
-    const ptyProcess = pty.spawn('/opt/homebrew/bin/claude', [
+    // Spawn Claude MCP call command
+    const claude = spawn('/opt/homebrew/bin/claude', [
+      'mcp',
+      'call',
+      MCP_ENDPOINT,
       '-p',
       promptText,
-      '--dangerously-skip-permissions',
       '--output-format',
       'json'
     ], {
-      name: 'xterm-color',
-      cwd: process.cwd(),
-      env: process.env
+      env: process.env, // Inherit all environment variables
+      stdio: ['pipe', 'pipe', 'pipe'] // Pipe stdin, stdout, stderr
     });
     
-    let buffer = '';
+    let stdoutBuffer = '';
+    let stderrBuffer = '';
     let hasResolved = false;
     
-    // Handle data from the PTY
-    ptyProcess.onData((data) => {
-      buffer += data;
-      console.log('PTY data chunk:', data);
-      
-      // Try to parse JSON from buffer
-      // Look for complete JSON objects in the buffer
-      const lines = buffer.split('\n');
-      for (const line of lines) {
-        const trimmed = line.trim();
-        if (trimmed.startsWith('{') && trimmed.endsWith('}')) {
+    // Handle stdout data
+    claude.stdout.on('data', (chunk) => {
+      stdoutBuffer += chunk.toString();
+      console.log('MCP stdout chunk:', chunk.toString());
+    });
+    
+    // Handle stderr data
+    claude.stderr.on('data', (chunk) => {
+      const data = chunk.toString();
+      stderrBuffer += data;
+      console.error('MCP stderr:', data);
+    });
+    
+    // Handle process exit
+    claude.on('close', (code) => {
+      if (!hasResolved) {
+        console.log(`MCP process exited with code: ${code}`);
+        
+        if (code === 0 && stdoutBuffer) {
+          // Try to parse JSON response
           try {
+            const trimmed = stdoutBuffer.trim();
             const parsed = JSON.parse(trimmed);
-            console.log('Successfully parsed JSON:', parsed);
+            console.log('Successfully parsed MCP JSON response');
             
             // Extract completion from various possible fields
             const completion = parsed.result || 
                              parsed.completion || 
                              parsed.content || 
                              parsed.output || 
+                             parsed.response ||
                              '';
             
             hasResolved = true;
-            ptyProcess.kill();
             resolve(completion);
-            return;
           } catch (e) {
-            // Not valid JSON, continue
+            console.error('Failed to parse JSON:', e);
+            reject(new Error('Invalid JSON response from Claude MCP'));
           }
+        } else if (stderrBuffer.toLowerCase().includes('overloaded')) {
+          reject(new Error('OVERLOADED'));
+        } else {
+          reject(new Error(`Claude MCP exited with code ${code}: ${stderrBuffer || 'No error output'}`));
         }
       }
     });
     
-    // Handle PTY exit
-    ptyProcess.onExit((exitCode) => {
-      console.log(`PTY process exited with code: ${exitCode}`);
+    // Handle process errors
+    claude.on('error', (error) => {
+      console.error('MCP spawn error:', error);
       if (!hasResolved) {
-        if (exitCode === 0) {
-          reject(new Error('Claude exited without producing valid JSON output'));
-        } else {
-          reject(new Error(`Claude exited with code ${exitCode}`));
-        }
+        hasResolved = true;
+        reject(new Error(`Failed to spawn Claude MCP: ${error.message}`));
       }
     });
     
     // Set a timeout to prevent hanging forever
     setTimeout(() => {
       if (!hasResolved) {
-        console.log('Timeout reached, killing PTY process');
+        console.log('Timeout reached, killing MCP process');
         hasResolved = true;
-        ptyProcess.kill();
-        reject(new Error('Claude CLI timed out after 30 seconds'));
+        claude.kill('SIGTERM');
+        // Force kill after 5 more seconds if needed
+        setTimeout(() => {
+          if (claude.exitCode === null) {
+            claude.kill('SIGKILL');
+          }
+        }, 5000);
+        reject(new Error('Claude MCP timed out after 30 seconds'));
       }
     }, 30000); // 30 second timeout
   });
 }
 
-// Function to run Claude with retry logic
-async function runClaudeWithRetry(promptText, maxRetries = 3) {
+// Function to call Claude with retry logic
+async function callClaudeWithRetry(promptText, maxRetries = 3) {
   const delays = [1000, 2000, 4000]; // Exponential backoff delays in ms
   
   for (let attempt = 0; attempt <= maxRetries; attempt++) {
@@ -107,14 +129,15 @@ async function runClaudeWithRetry(promptText, maxRetries = 3) {
       }
       
       console.log(`Attempt ${attempt + 1} of ${maxRetries + 1}`);
-      const completion = await runClaude(promptText);
+      const completion = await callClaudeMCP(promptText);
       return completion;
       
     } catch (error) {
       console.error(`Attempt ${attempt + 1} failed:`, error.message);
       
       // Check if it's an overloaded error
-      if (error.message && error.message.toLowerCase().includes('overloaded')) {
+      if (error.message === 'OVERLOADED' || 
+          (error.message && error.message.toLowerCase().includes('overloaded'))) {
         console.log('Claude API overloaded, will retry...');
         // Continue to next retry unless we're out of attempts
         if (attempt === maxRetries) {
@@ -141,9 +164,9 @@ app.post('/api/claude', async (req, res) => {
   
   try {
     // Call Claude with retry logic
-    const completion = await runClaudeWithRetry(text);
+    const completion = await callClaudeWithRetry(text);
     
-    console.log('Successfully got completion from Claude');
+    console.log('Successfully got completion from Claude MCP');
     
     // Send response
     res.json({ completion });
@@ -174,10 +197,14 @@ app.use((err, req, res, next) => {
 
 // Start the server
 app.listen(PORT, '127.0.0.1', () => {
-  console.log(`\n🚀 Claude Web Interface Server (with PTY support)`);
+  console.log(`\n🚀 Claude Web Interface with MCP Support`);
   console.log(`📍 Running at: http://localhost:${PORT}`);
   console.log(`🔧 Health check: http://localhost:${PORT}/health`);
-  console.log(`\n✅ Using subscription-authenticated Claude CLI from ~/.claude`);
-  console.log(`✅ Using node-pty for proper TTY emulation`);
-  console.log(`⚠️  Make sure you've run 'claude --dangerously-skip-permissions' once interactively\n`);
+  console.log(`\n📡 Using MCP endpoint: ${MCP_ENDPOINT}`);
+  console.log(`✅ Using subscription-authenticated Claude CLI from ~/.claude`);
+  console.log(`\n⚠️  Make sure MCP server is running:`);
+  console.log(`    claude mcp serve --transport http --port 9090 --dangerously-skip-permissions`);
+  console.log(`\n⚠️  Make sure endpoints are registered:`);
+  console.log(`    claude mcp add --transport http design-server http://127.0.0.1:9090`);
+  console.log(`    claude mcp add --transport http exec-server http://127.0.0.1:9090\n`);
 });
