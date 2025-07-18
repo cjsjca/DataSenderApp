@@ -105,6 +105,63 @@ Building towards:
 - **Contextual memory** - Current projects and goals
 - **Emotional memory** - Relationship dynamics
 
+## Core Feature: Persistent State vs Memory
+
+### The Critical Distinction
+- **Memory**: Facts, conversations, knowledge (what we know)
+- **State**: Personality, relationship continuity, behavioral patterns (who we are)
+
+### Why Persistent State Matters
+Current AI systems reset their "personality" with each session. This agent must maintain:
+1. **Relationship continuity** - Remembers not just what we discussed, but HOW we interact
+2. **Behavioral adaptation** - Learns your preferences and adjusts communication style
+3. **Emotional context** - Understands the ongoing dynamic, not just facts
+4. **Trust building** - Develops deeper understanding over time
+
+### Implementation Approach
+
+#### Current (Bootstrap Phase)
+- CLAUDE.md provides basic memory persistence
+- Manual preservation of interaction patterns
+- Session summaries capture some state
+
+#### Near-term Goals
+1. **State serialization format**
+   ```json
+   {
+     "personality": {
+       "communication_style": "direct, technical",
+       "user_preferences": {...},
+       "interaction_patterns": [...]
+     },
+     "relationship": {
+       "trust_level": 0.85,
+       "shared_context": [...],
+       "inside_jokes": [...]
+     },
+     "behavioral_memory": {
+       "successful_patterns": [...],
+       "avoided_patterns": [...]
+     }
+   }
+   ```
+
+2. **State preservation mechanisms**
+   - Automatic state snapshots after each session
+   - State merging across parallel sessions
+   - Gradual state evolution vs sudden changes
+
+3. **State injection at startup**
+   - Load previous state before first interaction
+   - Seamless continuation of relationship
+   - No "cold start" feeling
+
+#### Long-term Vision
+- **Distributed state synchronization** across multiple agent instances
+- **State versioning** with ability to "roll back" relationship changes
+- **State sharing** between specialized sub-agents
+- **Emotional state modeling** for more human-like continuity
+
 ## Technical Architecture
 
 ### Current Stack
@@ -149,10 +206,19 @@ The bootstrap proves the concept when:
 ## Next Steps
 
 1. **Stabilize bootstrap** - Current Mac setup as daily driver
-2. **Build cloud bridge** - Queue system for offline operation  
-3. **Extract agent core** - Separate intelligence from infrastructure
-4. **Scale horizontally** - Multiple specialized agents
-5. **Achieve autonomy** - Agent acts without prompting
+2. **Implement state persistence** - Build serialization and loading system
+3. **Build cloud bridge** - Queue system for offline operation  
+4. **Extract agent core** - Separate intelligence from infrastructure
+5. **Scale horizontally** - Multiple specialized agents
+6. **Achieve autonomy** - Agent acts without prompting
+
+### Priority: State Persistence System
+The next critical feature is implementing persistent state:
+1. Design state schema that captures personality + relationship
+2. Build automatic state capture after each interaction
+3. Create state loading mechanism at session start
+4. Test continuity across multiple sessions
+5. Implement gradual state evolution algorithms
 
 ## Philosophy
 
