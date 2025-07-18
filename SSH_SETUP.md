@@ -42,24 +42,66 @@ claude --version
 2. You should see your Mac terminal
 3. Test with: `cd ~/Projects/DataSenderApp && ls`
 
+## Claude CLI Authentication (✅ WORKING!)
+
+### The Discovery
+OAuth authentication WORKS through tmux from SSH! Here's how:
+
+1. **Start tmux session** (from Termius SSH):
+   ```bash
+   cd ~/Projects/DataSenderApp
+   ./claude_ssh.sh
+   ```
+
+2. **When prompted for login**:
+   - Claude shows a browser URL
+   - Open the URL on ANY device (iPhone, Mac, etc.)
+   - Complete the OAuth login
+   - The tmux session receives the authentication
+   - Your $250/month subscription is active!
+
+3. **Session persists**:
+   - Detach with `Ctrl+B` then `D`
+   - Reattach anytime with `./claude_ssh.sh`
+   - Authentication survives disconnects
+
 ## Create Snippets in Termius
 
-### Snippet 1: Launch Chat
+### Essential Snippets
+
+#### 1. Claude CLI (Full Assistant)
+```bash
+cd ~/Projects/DataSenderApp && ./claude_ssh.sh
+```
+
+#### 2. Terminal Chat (Quick Data Capture)
 ```bash
 cd ~/Projects/DataSenderApp && python3 terminal_chat.py
 ```
 
-### Snippet 2: Quick Send
+#### 3. Check Claude Session
+```bash
+tmux ls | grep claude-cli || echo "No Claude session running"
+```
+
+#### 4. Kill Claude Session (if needed)
+```bash
+tmux kill-session -t claude-cli 2>/dev/null && echo "Session killed" || echo "No session to kill"
+```
+
+### Legacy Snippets
+
+#### Quick Send
 ```bash
 cd ~/Projects/DataSenderApp && echo "$1" | python3 quick_send.py
 ```
 
-### Snippet 3: Check Status
+#### Check Status
 ```bash
 ps aux | grep claude | grep -v grep || echo "Claude not running"
 ```
 
-### Snippet 4: Recent Messages
+#### Recent Messages
 ```bash
 cd ~/Projects/DataSenderApp && python3 -c "from claude_listener import get_latest_message; msg = get_latest_message(); print(f'Latest: {msg['content']}' if msg else 'No messages')"
 ```
