@@ -58,3 +58,13 @@ MCP in Claude Code CLI might work differently than documented:
 ## Next Test: Direct Supabase Query
 
 Let me test if Supabase operations work at all, with or without "MCP":
+
+### Direct API Test
+Successfully queried Supabase directly using curl:
+- Retrieved recent messages from texts table
+- This works without any MCP involvement
+- Just using standard REST API
+
+## Test 4: Searching for MCP Reality in Claude Docs
+
+Let me check more specific Claude documentation about how MCP actually manifests:
