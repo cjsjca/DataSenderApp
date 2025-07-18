@@ -184,6 +184,27 @@ This document captures key realizations and insights that emerge during developm
 
 ---
 
+## 2025-01-18: Auto-Compact at 19% - The Ticking Clock
+
+**Insight**: Claude shows "Context left until auto-compact: 19%" - after certain API calls, context will auto-compact and state is lost while some memories remain. This is a ticking clock on our conversation.
+
+**Implications**:
+- We have limited "API calls" before context compression
+- State gets lost but some memories persist (unclear which)
+- Need to capture critical state BEFORE auto-compact
+- Can't rely on context for state persistence
+- Must design assuming context will be compressed
+
+**Critical Actions**:
+- Document key decisions/insights immediately
+- Use MCP to persist important state
+- Don't assume I'll remember procedural knowledge
+- Prepare for degraded performance after compact
+
+**Discovered while**: User showing me the 19% context warning
+
+---
+
 ## How to Use This Document
 
 1. **Capture immediately**: When an insight emerges, document it right away
