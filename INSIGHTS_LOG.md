@@ -72,6 +72,20 @@ This document captures key realizations and insights that emerge during developm
 
 ---
 
+## 2025-01-18: Recursive Understanding Through Use
+
+**Insight**: We discovered the need for INSIGHTS_LOG.md while creating INSIGHTS_LOG.md itself - a recursive realization that demonstrates how understanding evolves through use, not just planning.
+
+**Implications**:
+- The act of building reveals needs that planning couldn't foresee
+- Meta-insights (insights about insights) are valid and important
+- Systems teach us about themselves as we build them
+- Documentation structures emerge from practice, not theory
+
+**Discovered while**: Adding the previous insight about insights needing persistent space
+
+---
+
 ## How to Use This Document
 
 1. **Capture immediately**: When an insight emerges, document it right away
