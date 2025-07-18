@@ -1,5 +1,15 @@
 # DataSenderApp Project Conventions
 
+## Auto-Commit System
+This project includes an automatic commit system (`auto_commit.sh`) that:
+- **Watches for file changes** and commits after 5 seconds of inactivity
+- **Pushes to GitHub** every 30 minutes
+- **Starts automatically** via:
+  - Shell profile (~/.zshrc) when opening new terminals
+  - LaunchAgent (com.datasenderapp.autocommit) at system login
+- **Prevents duplicates** by checking if already running
+- **Logs output** to /tmp/datasenderapp-autocommit.log
+
 ## Project Structure
 - **Frontend/**: iOS SwiftUI application code
 - **Backend/**: Backend services and storage management

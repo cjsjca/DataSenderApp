@@ -26,6 +26,7 @@ GRAY = '\033[90m'
 
 class TerminalChat:
     def __init__(self):
+        self.session_start = datetime.now()
         self.last_check = datetime.now()
         self.message_queue = Queue()
         self.running = True
@@ -62,8 +63,9 @@ class TerminalChat:
             'Authorization': f'Bearer {SUPABASE_KEY}'
         }
         
-        # Look for Claude's responses
-        query = f"created_at.gt.{self.last_check.isoformat()}&content.like.[CLAUDE]%&order=created_at.asc"
+        # Only look for new messages after the last check
+        timestamp = self.last_check.isoformat()
+        query = f"created_at.gt.{timestamp}&order=created_at.asc"
         
         try:
             response = requests.get(
@@ -75,8 +77,13 @@ class TerminalChat:
             if response.status_code == 200:
                 messages = response.json()
                 for msg in messages:
-                    self.message_queue.put(msg)
-                    self.last_check = datetime.fromisoformat(msg['created_at'].replace('+00:00', ''))
+                    # Only show messages that aren't from terminal (avoid echo)
+                    if '[TERMINAL]' not in msg['content']:
+                        self.message_queue.put(msg)
+                    # Update timestamp regardless
+                    msg_time = datetime.fromisoformat(msg['created_at'].replace('+00:00', ''))
+                    if msg_time > self.last_check:
+                        self.last_check = msg_time
         except:
             pass
     

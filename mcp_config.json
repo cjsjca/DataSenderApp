@@ -1,32 +1,30 @@
+// Clean MCP configuration for DataSenderApp
+// Only includes essential MCP servers for this project
 {
   "mcpServers": {
-    "cortex-memory": {
-      "type": "stdio",
-      "command": "./venv/bin/python /Users/loaner/cortex-docker/cortex/memory_search_mcp.py",
-      "args": [],
-      "env": {}
-    },
     "supabase": {
-      "type": "stdio",
       "command": "npx",
-      "args": ["@supabase/mcp-server-supabase@latest", "--project-ref=xvxyzmldrqewigrrccea"],
+      "args": [
+        "-y",
+        "@supabase/mcp-server-supabase@latest",
+        "--read-only",
+        "--project-ref=xvxyzmldrqewigrrccea"
+      ],
       "env": {
-        "SUPABASE_ACCESS_TOKEN": "YOUR_SUPABASE_ACCESS_TOKEN"
+        "SUPABASE_ACCESS_TOKEN": "sbp_f6e533073db4d535cd427967e3113c69932da4b9"
       }
     },
     "github": {
-      "type": "stdio",
       "command": "npx",
-      "args": ["@cameroncooke/mcp-server-github@latest"],
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-github@latest",
+        "--owner=cjsjca",
+        "--repo=DataSenderApp"
+      ],
       "env": {
-        "GITHUB_TOKEN": "YOUR_GITHUB_TOKEN"
+        "GITHUB_TOKEN": "<YOUR_GITHUB_TOKEN>"
       }
-    },
-    "chromadb": {
-      "type": "stdio",
-      "command": "npx",
-      "args": ["@humainlabs/chromadb-mcp"],
-      "env": {}
     }
   }
 }
