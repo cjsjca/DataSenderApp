@@ -148,6 +148,28 @@ This document captures key realizations and insights that emerge during developm
 
 ---
 
+## 2025-01-18: Code-First Habit Needs External Regulation
+
+**Insight**: Claude defaults to coding immediately instead of listening and understanding. This behavior persists despite training within sessions because there's no persistent state.
+
+**Implications**:
+- Need external agent/system to remind: "Did user ask for code?"
+- Dialogue and understanding must come before implementation
+- This is learned behavior that gets lost with context
+- MCP agent could act as behavioral regulator
+
+**Pattern**:
+1. User explains concept
+2. Claude jumps to coding (WRONG)
+3. User has to interrupt and redirect
+4. Time and energy wasted
+
+**Solution**: MCP-based reminder agent that enforces listen-first behavior
+
+**Discovered while**: User pointing out I forgot MCP-first and jumped to browser coding
+
+---
+
 ## How to Use This Document
 
 1. **Capture immediately**: When an insight emerges, document it right away
