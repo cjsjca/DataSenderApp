@@ -20,6 +20,7 @@ struct DataSenderApp: App {
         WindowGroup {
             ContentView()
                 .environmentObject(appState)
+                .preferredColorScheme(.none) // Follows system setting
         }
     }
 }

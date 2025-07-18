@@ -22,38 +22,44 @@ struct ContentView: View {
     @State private var alertMessage = ""
     
     var body: some View {
-        VStack(spacing: 20) {
-            Button(action: toggleRecording) {
-                Text(isRecording ? "Stop Recording" : "Record Audio")
-                    .frame(maxWidth: .infinity)
-                    .padding()
-                    .background(isRecording ? Color.red : Color.blue)
-                    .foregroundColor(.white)
-                    .cornerRadius(10)
-            }
-            .disabled(isUploading)
-            .accessibilityIdentifier("recordAudioButton")
+        ZStack {
+            Color(UIColor.systemBackground)
+                .ignoresSafeArea()
             
-            Button(action: { showTextInput.toggle() }) {
-                Text("Text Input")
-                    .frame(maxWidth: .infinity)
-                    .padding()
-                    .background(Color.blue)
-                    .foregroundColor(.white)
-                    .cornerRadius(10)
-            }
-            .disabled(isUploading)
-            .accessibilityIdentifier("textInputButton")
+            VStack(spacing: 20) {
+                Button(action: toggleRecording) {
+                    Text(isRecording ? "Stop Recording" : "Record Audio")
+                        .frame(maxWidth: .infinity)
+                        .padding()
+                        .background(isRecording ? Color.red : Color.accentColor)
+                        .foregroundColor(.white)
+                        .cornerRadius(10)
+                }
+                .disabled(isUploading)
+                .accessibilityIdentifier("recordAudioButton")
+                
+                Button(action: { showTextInput.toggle() }) {
+                    Text("Text Input")
+                        .frame(maxWidth: .infinity)
+                        .padding()
+                        .background(Color.accentColor)
+                        .foregroundColor(.white)
+                        .cornerRadius(10)
+                }
+                .disabled(isUploading)
+                .accessibilityIdentifier("textInputButton")
             
             if showTextInput {
                 VStack {
                     TextEditor(text: $textInput)
                         .frame(height: 150)
                         .padding(4)
+                        .background(Color(UIColor.secondarySystemBackground))
                         .overlay(
                             RoundedRectangle(cornerRadius: 8)
-                                .stroke(Color.gray.opacity(0.5), lineWidth: 1)
+                                .stroke(Color(UIColor.separator), lineWidth: 1)
                         )
+                        .cornerRadius(8)
                         .accessibilityIdentifier("textInputEditor")
                     
                     Button(action: sendText) {
@@ -74,7 +80,7 @@ struct ContentView: View {
                 Text("Take Photo")
                     .frame(maxWidth: .infinity)
                     .padding()
-                    .background(Color.blue)
+                    .background(Color.accentColor)
                     .foregroundColor(.white)
                     .cornerRadius(10)
             }
@@ -85,7 +91,7 @@ struct ContentView: View {
                 Text("Upload File")
                     .frame(maxWidth: .infinity)
                     .padding()
-                    .background(Color.blue)
+                    .background(Color.accentColor)
                     .foregroundColor(.white)
                     .cornerRadius(10)
             }
@@ -104,9 +110,10 @@ struct ContentView: View {
                     .padding()
             }
             
-            Spacer()
+                Spacer()
+            }
+            .padding()
         }
-        .padding()
         .fullScreenCover(isPresented: $showCamera) {
             ImagePicker(selectedImage: $selectedImage, sourceType: .camera)
                 .ignoresSafeArea()
