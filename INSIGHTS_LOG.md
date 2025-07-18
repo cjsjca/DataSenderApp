@@ -58,6 +58,20 @@ This document captures key realizations and insights that emerge during developm
 
 ---
 
+## 2025-01-18: Insights Need Their Own Persistent Space
+
+**Insight**: Git keeps everything but buried in commits isn't the same as having insights accessible and organized. These aren't "design insights" but "emergent understandings" that only appear through actual use.
+
+**Implications**:
+- Git shows WHAT changed, INSIGHTS_LOG captures WHY understanding evolved
+- Insights are part of the persistent memory/state system
+- Need dedicated capture for "aha moments" vs just code changes
+- These insights guide future architecture decisions
+
+**Discovered while**: Realizing that critical realizations were getting lost in chat logs and commits
+
+---
+
 ## How to Use This Document
 
 1. **Capture immediately**: When an insight emerges, document it right away
