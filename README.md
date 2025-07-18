@@ -38,9 +38,27 @@ python3 terminal_chat.py
 ```
 
 ### Remote Access (via Termius)
+
+#### Option 1: Terminal Chat (Always Works)
 1. SSH into your Mac
 2. Navigate to project: `cd ~/Projects/DataSenderApp`
 3. Run: `python3 terminal_chat.py`
+
+#### Option 2: Claude CLI via tmux (Uses Subscription)
+1. **First time setup** (on Mac Terminal):
+   ```bash
+   cd ~/Projects/DataSenderApp
+   ./claude_tmux.sh start  # Start authenticated session
+   ```
+
+2. **From Termius SSH**:
+   ```bash
+   cd ~/Projects/DataSenderApp
+   ./claude_ssh.sh  # Attaches to existing session
+   ```
+
+3. **Detach without closing**: Press `Ctrl+B` then `D`
+4. **Your subscription remains active** - no API charges!
 
 ### Automatic Versioning System
 
