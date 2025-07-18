@@ -10,6 +10,14 @@ This project includes an automatic commit system (`auto_commit.sh`) that:
 - **Prevents duplicates** by checking if already running
 - **Logs output** to /tmp/datasenderapp-autocommit.log
 
+## Claude CLI Remote Access (Subscription Authentication)
+Successfully configured tmux-based authentication for Claude CLI access via SSH:
+- **OAuth works through tmux**: Complete browser auth on any device
+- **Persistent sessions**: Authentication survives SSH disconnects
+- **No API charges**: Uses $250/month subscription, not pay-per-token
+- **Access method**: Run `./claude_ssh.sh` from Termius SSH
+- **Session management**: Ctrl+B,D to detach, reattach anytime
+
 ## Project Structure
 - **Frontend/**: iOS SwiftUI application code
 - **Backend/**: Backend services and storage management
