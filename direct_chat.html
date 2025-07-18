@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <title>Direct Supabase Chat</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+            padding: 20px;
+            background: #000;
+            color: #fff;
+            margin: 0;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            text-align: center;
+            color: #007AFF;
+            margin-bottom: 30px;
+        }
+        
+        #status {
+            text-align: center;
+            padding: 10px;
+            background: #111;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+        
+        .success { color: #4CAF50; }
+        .error { color: #F44336; }
+        
+        #input-area {
+            background: #111;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+        
+        textarea {
+            width: 100%;
+            padding: 15px;
+            font-size: 16px;
+            border: 1px solid #333;
+            border-radius: 8px;
+            background: #1c1c1e;
+            color: #fff;
+            resize: vertical;
+            min-height: 100px;
+            box-sizing: border-box;
+        }
+        
+        textarea:focus {
+            outline: none;
+            border-color: #007AFF;
+        }
+        
+        button {
+            width: 100%;
+            padding: 15px;
+            font-size: 16px;
+            background: #007AFF;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        
+        button:active {
+            background: #0051D5;
+        }
+        
+        #history {
+            background: #111;
+            padding: 20px;
+            border-radius: 12px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .message {
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            background: #1c1c1e;
+            border-left: 3px solid #007AFF;
+        }
+        
+        .message-time {
+            font-size: 12px;
+            color: #666;
+        }
+        
+        .quick-buttons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .quick-btn {
+            padding: 8px 16px;
+            background: #333;
+            border: none;
+            border-radius: 20px;
+            color: #fff;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        
+        .quick-btn:active {
+            background: #555;
+        }
+    </style>
+</head>
+<body>
+    <h1>Direct to Supabase</h1>
+    
+    <div id="status">Ready to send messages</div>
+    
+    <div class="quick-buttons">
+        <button class="quick-btn" onclick="quickSend('Testing from iPhone')">Test Message</button>
+        <button class="quick-btn" onclick="quickSend('Claude, can you see this?')">Check Claude</button>
+        <button class="quick-btn" onclick="quickSend('[URGENT] Need help')">Urgent</button>
+    </div>
+    
+    <div id="input-area">
+        <textarea id="message" placeholder="Type your message here..." autofocus></textarea>
+        <button onclick="sendMessage()">Send to Supabase</button>
+    </div>
+    
+    <div id="history">
+        <h3>Recent Messages</h3>
+        <div id="messages"></div>
+    </div>
+    
+    <script>
+    const SUPABASE_URL = 'https://xvxyzmldrqewigrrccea.supabase.co';
+    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh2eHl6bWxkcnFld2lncnJjY2VhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTI3ODY0NDUsImV4cCI6MjA2ODM2MjQ0NX0.Y6F9a-L6VUdxPdUTNZTBNvAqTWwR6i2R-ACsoZZPxyE';
+    
+    async function sendMessage() {
+        const textarea = document.getElementById('message');
+        const message = textarea.value.trim();
+        if (!message) return;
+        
+        const status = document.getElementById('status');
+        status.textContent = 'Sending...';
+        status.className = '';
+        
+        try {
+            const response = await fetch(`${SUPABASE_URL}/rest/v1/texts`, {
+                method: 'POST',
+                headers: {
+                    'apikey': SUPABASE_KEY,
+                    'Authorization': `Bearer ${SUPABASE_KEY}`,
+                    'Content-Type': 'application/json',
+                    'Prefer': 'return=minimal'
+                },
+                body: JSON.stringify({ 
+                    content: `[DIRECT_WEB] ${message}`,
+                    metadata: {
+                        source: 'direct_chat',
+                        device: navigator.userAgent.includes('iPhone') ? 'iPhone' : 'Desktop',
+                        timestamp: new Date().toISOString()
+                    }
+                })
+            });
+            
+            if (response.ok) {
+                status.textContent = '✓ Message sent to Supabase!';
+                status.className = 'success';
+                textarea.value = '';
+                addToHistory(message);
+                
+                // Clear success message after 3 seconds
+                setTimeout(() => {
+                    status.textContent = 'Ready to send messages';
+                    status.className = '';
+                }, 3000);
+            } else {
+                throw new Error('Failed to send');
+            }
+        } catch (error) {
+            status.textContent = '✗ Error sending message';
+            status.className = 'error';
+            console.error('Error:', error);
+        }
+    }
+    
+    function quickSend(message) {
+        document.getElementById('message').value = message;
+        sendMessage();
+    }
+    
+    function addToHistory(message) {
+        const messages = document.getElementById('messages');
+        const time = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+        
+        const messageDiv = document.createElement('div');
+        messageDiv.className = 'message';
+        messageDiv.innerHTML = `
+            <div>${message}</div>
+            <div class="message-time">${time}</div>
+        `;
+        
+        messages.insertBefore(messageDiv, messages.firstChild);
+        
+        // Keep only last 10 messages
+        while (messages.children.length > 10) {
+            messages.removeChild(messages.lastChild);
+        }
+    }
+    
+    // Enter to send (but allow Shift+Enter for new lines)
+    document.getElementById('message').addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            sendMessage();
+        }
+    });
+    
+    // Save messages to localStorage
+    window.addEventListener('beforeunload', () => {
+        const messages = Array.from(document.querySelectorAll('.message')).map(m => 
+            m.querySelector('div').textContent
+        );
+        localStorage.setItem('messageHistory', JSON.stringify(messages));
+    });
+    
+    // Load message history
+    window.addEventListener('load', () => {
+        const saved = localStorage.getItem('messageHistory');
+        if (saved) {
+            JSON.parse(saved).forEach(msg => addToHistory(msg));
+        }
+    });
+    </script>
+</body>
+</html>
