@@ -65,6 +65,12 @@ Voice/Text → Web Interface → Local Server → Claude CLI → Supabase
 - Auto-versioning captures all changes
 - Building towards persistent AI state
 
+### 7. Claude Twins (MCP Communication Demo)
+- `claude_twins/` - Multiple Claude instances that communicate via MCP
+- Demonstrates exponential power of MCP servers
+- Shows distributed agent coordination
+- Run: `cd claude_twins/instance_1` and `cd claude_twins/instance_2` in separate terminals
+
 ## Usage
 
 ### Primary Interface - Real-time Web Chat
