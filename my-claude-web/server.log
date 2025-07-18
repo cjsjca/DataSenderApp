@@ -99,3 +99,49 @@ Successfully parsed JSON: {
   }
 }
 PTY process exited with code: [object Object]
+Received request: { text: 'hello' }
+Attempt 1 of 4
+Spawning Claude CLI with prompt: "hello"
+PTY data chunk: {"type":"result","subtype":"success","is_error":false,"duration_ms":2716,"duration_api_ms":3610,"num_turns":1,"result":"Hello! How can I help you today?","session_id":"e2538c1c-dd80-4cf3-9036-2a048663dcfd","total_cost_usd":0.26919025,"usage":{"input_tokens":4,"cache_creation_input_tokens":14287,"cache_read_input_tokens":0,"output_tokens":15,"server_tool_use":{"web_search_requests":0},"service_tier":"standard"}}
+
+Successfully parsed JSON: {
+  type: 'result',
+  subtype: 'success',
+  is_error: false,
+  duration_ms: 2716,
+  duration_api_ms: 3610,
+  num_turns: 1,
+  result: 'Hello! How can I help you today?',
+  session_id: 'e2538c1c-dd80-4cf3-9036-2a048663dcfd',
+  total_cost_usd: 0.26919025,
+  usage: {
+    input_tokens: 4,
+    cache_creation_input_tokens: 14287,
+    cache_read_input_tokens: 0,
+    output_tokens: 15,
+    server_tool_use: { web_search_requests: 0 },
+    service_tier: 'standard'
+  }
+}
+Successfully got completion from Claude
+PTY data chunk: [?25h[?25h
+Successfully parsed JSON: {
+  type: 'result',
+  subtype: 'success',
+  is_error: false,
+  duration_ms: 2716,
+  duration_api_ms: 3610,
+  num_turns: 1,
+  result: 'Hello! How can I help you today?',
+  session_id: 'e2538c1c-dd80-4cf3-9036-2a048663dcfd',
+  total_cost_usd: 0.26919025,
+  usage: {
+    input_tokens: 4,
+    cache_creation_input_tokens: 14287,
+    cache_read_input_tokens: 0,
+    output_tokens: 15,
+    server_tool_use: { web_search_requests: 0 },
+    service_tier: 'standard'
+  }
+}
+PTY process exited with code: [object Object]
