@@ -83,7 +83,8 @@ app.post('/api/claude', async (req, res) => {
   
   // Execute Claude CLI in print mode with JSON output
   // Uses existing authenticated CLI session from ~/.claude
-  const command = `claude -p "${escapedText}" --output-format json`;
+  // Note: Using full path and --dangerously-skip-permissions flag
+  const command = `/opt/homebrew/bin/claude --dangerously-skip-permissions -p "${escapedText}" --output-format json`;
   
   // Set execution options (no timeout for debugging)
   const options = {
