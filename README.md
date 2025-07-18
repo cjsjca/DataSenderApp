@@ -147,6 +147,48 @@ SUPABASE> from texts select *
 SUPABASE> from storage.objects select * order by created_at desc limit 10
 ```
 
+### Persistent Memory
+
+Claude Code CLI supports persistent memory through `CLAUDE.md` files, which store project-specific conventions and knowledge across sessions.
+
+1. **Bootstrap memory** by running `/init` at the project root to generate `CLAUDE.md`:
+   ```bash
+   cd /path/to/DataSenderApp
+   claude /init
+   ```
+   This analyzes your project structure and creates a foundational memory file.
+
+2. **Add new facts** with `/memory add <your note>`:
+   ```bash
+   claude /memory add "Always run tests before committing with: xcodebuild test -scheme DataSenderApp"
+   claude /memory add "Storage buckets: 'audio', 'photos', 'files' for respective data types"
+   ```
+
+3. **Review memory** with `/memory list`:
+   ```bash
+   claude /memory list
+   ```
+   This displays all stored facts and conventions from `CLAUDE.md`.
+
+4. **Refresh chat context** with `/clear` without losing stored memory:
+   ```bash
+   claude /clear
+   ```
+   This clears the conversation history but preserves all facts in `CLAUDE.md`.
+
+**💡 Pro Tip**: Create a shell alias for quick memory initialization:
+
+```bash
+# Add to ~/.zshrc (for Zsh) or ~/.bash_profile (for Bash)
+alias claude-init="claude /init"
+
+# Then simply run after cd'ing into any project:
+cd /path/to/DataSenderApp
+claude-init
+```
+
+This way, you can quickly bootstrap Claude's memory for any project, ensuring it understands your project conventions, test commands, and specific requirements from the start of each session.
+
 ## Testing
 
 ### Run Unit Tests
