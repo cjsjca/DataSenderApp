@@ -1,5 +1,7 @@
 # DataSenderApp - AI Agent Bootstrap System
 
+**🚨 FOR CLAUDE: If you're reading this after context loss/compaction, STOP and read CRITICAL_STATE_CAPTURE.md first! It contains your bootstrap instructions. 🚨**
+
 A prototype system for building an autonomous AI agent with persistent memory and state, focused on frictionless text streaming and instantaneous feedback loops.
 
 ## Quick Start
