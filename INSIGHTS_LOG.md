@@ -125,6 +125,29 @@ This document captures key realizations and insights that emerge during developm
 
 ---
 
+## 2025-01-18: Core Purpose - Cognitive Prosthetic
+
+**Insight**: This entire system is a cognitive prosthetic designed to:
+- Increase cognitive flow
+- Offload cognitive load  
+- Accelerate capability
+- Optimize energy expenditure as an organism
+
+**Key Design Principles**:
+- Voice-first (most ergonomic for thought streaming)
+- Pure text as primary proof of concept
+- Browser interface for anywhere access
+- Conceptual work stays verbal, implementation happens automatically
+- Rapid iteration through visual feedback
+
+**The Two Modes**:
+1. **Terminal + Voice**: Current method, very efficient
+2. **The Browser**: Needed for mobile, enables file drag-drop, visual iteration
+
+**Discovered while**: Returning to core purpose after getting deep in technical details
+
+---
+
 ## How to Use This Document
 
 1. **Capture immediately**: When an insight emerges, document it right away
