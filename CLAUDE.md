@@ -1,6 +1,6 @@
 # DataSenderApp Project Conventions
 
-**⚠️ CLAUDE: After compaction/context loss? Read CRITICAL_STATE_CAPTURE.md IMMEDIATELY for bootstrap instructions! ⚠️**
+**⚠️ CLAUDE: New session or conversation restarted? Read CRITICAL_STATE_CAPTURE.md IMMEDIATELY for essential context! ⚠️**
 
 ## PROJECT VISION: Agent Bootstrap System
 This Mac + Claude Code CLI setup is a proof-of-concept for an autonomous AI agent. It demonstrates:
