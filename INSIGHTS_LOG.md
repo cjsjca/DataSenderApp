@@ -86,6 +86,26 @@ This document captures key realizations and insights that emerge during developm
 
 ---
 
+## 2025-01-18: The Temporal Nature of Insights
+
+**Insight**: Insights have different lifespans - what's profound today might be obvious tomorrow. Should INSIGHTS_LOG be chronological/immutable or edited/curated?
+
+**Implications**:
+- Chronological preserves learning journey but accumulates noise
+- Curated keeps relevance but loses historical context
+- Some insights are foundational, others are stepping stones
+- Need to distinguish between temporary realizations and permanent principles
+
+**Possible Approaches**:
+1. Keep chronological log + periodic "distillation" documents
+2. Tag insights with importance/longevity markers
+3. Archive old insights but keep "active insights" visible
+4. Create insight categories: foundational vs contextual vs temporary
+
+**Discovered while**: Questioning whether today's insights will matter tomorrow
+
+---
+
 ## How to Use This Document
 
 1. **Capture immediately**: When an insight emerges, document it right away
