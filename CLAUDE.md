@@ -1,5 +1,14 @@
 # DataSenderApp Project Conventions
 
+## PROJECT VISION: Agent Bootstrap System
+This Mac + Claude Code CLI setup is a proof-of-concept for an autonomous AI agent. It demonstrates:
+- Central intelligence hub with code execution capability
+- Instantaneous bidirectional communication
+- Persistent memory and state preservation
+- The type of agent we're ultimately building at scale
+
+See AGENT_VISION.md for complete autonomous agent roadmap.
+
 ## Auto-Commit System
 This project includes an automatic commit system (`auto_commit.sh`) that:
 - **Watches for file changes** and commits after 5 seconds of inactivity
@@ -25,18 +34,18 @@ tail -f /tmp/datasenderapp-autocommit.log
 
 **Note**: Auto-start from .zshrc disabled to prevent conflicts. LaunchAgent available but manual start recommended.
 
-## Claude CLI Remote Access (Subscription Authentication)
-Successfully configured tmux-based authentication for Claude CLI access via SSH:
-- **OAuth works through tmux**: Complete browser auth on any device
-- **Persistent sessions**: Authentication survives SSH disconnects
-- **No API charges**: Uses $250/month subscription, not pay-per-token
-- **Access method**: Run `./claude_ssh.sh` from Termius SSH
-- **Session management**: Ctrl+B,D to detach, reattach anytime
+## Primary Interface: Real-time Web Chat
+- **Start server**: `./start_server.sh`
+- **Local access**: http://localhost:8080/realtime_chat.html
+- **iPhone access**: http://YOUR_MAC_IP:8080/realtime_chat.html
+- **Features**: Real-time status, visual feedback, interrupt capability
+- **Voice input**: Mac Accessibility → Voice Control
 
 ## Project Structure
-- **Frontend/**: iOS SwiftUI application code
-- **Backend/**: Backend services and storage management
-- **Maintain separation**: Keep iOS-specific code in Frontend/, backend logic in Backend/
+- **Web interfaces**: HTML files for data capture
+- **Backend/**: Server and storage integration
+- **Auto-versioning**: Git commits via fswatch
+- **Documentation**: Architecture, vision, and guides
 
 ## Environment & Security
 - **Never commit real tokens**: Always use `.env` file for sensitive credentials
@@ -49,32 +58,29 @@ Successfully configured tmux-based authentication for Claude CLI access via SSH:
   - `GITHUB_TOKEN`
 
 ## Supabase Integration
-- **Always use Supabase MCP for uploads**: All data operations should go through Supabase
+- **Primary data store**: All inputs go to Supabase first
 - **Project reference**: `xvxyzmldrqewigrrccea`
-- **Use Supabase Swift SDK**: Already integrated in the project
-- **Storage buckets**: Configure for audio, photos, and files
-- **Database tables**: Create migrations for text data storage
+- **MCP integration**: Direct database operations via Claude
+- **Tables**: `texts` table for all captured data
+- **Future**: Vector embeddings and processing pipeline
 
 ## Development Practices
-- **SwiftUI for all UI**: Maintain modern SwiftUI patterns
-- **Async/await**: Use modern Swift concurrency
-- **Error handling**: Comprehensive error handling for all data operations
-- **User feedback**: Always provide clear feedback for upload success/failure
+- **Real-time feedback**: Every action has visual response
+- **Interrupt capability**: Can stop long-running processes
+- **Voice-first**: Optimize for speech input
+- **Instant saves**: Auto-commit captures everything
 
-## Testing
-- **Test command**: `xcodebuild test -project DataSenderApp.xcodeproj -scheme DataSenderApp -destination 'platform=iOS Simulator,name=iPhone 15,OS=18.1'`
-- **Run tests before commits**: Ensure all tests pass
-- **Test coverage**: Cover all data capture and upload scenarios
+## Agent Capabilities
+- **Code execution**: Direct file system access via MCP
+- **Memory persistence**: Context preserved in CLAUDE.md
+- **State building**: Working towards persistent personality
+- **Autonomous actions**: Can complete complex tasks independently
 
-## CI/CD
-- **GitHub Actions**: Configured for automated testing
-- **Workflow**: Tests Xcode build and Supabase integration
-
-## Code Style
-- **Swift conventions**: Follow standard Swift naming conventions
-- **SwiftUI patterns**: Use @State, @Binding, @EnvironmentObject appropriately
-- **Modular components**: Keep views small and focused
-- **Comments**: Only when necessary for complex logic
+## Future Pipeline
+- **Vector DB**: Pinecone for semantic search
+- **Embeddings**: OpenAI for understanding
+- **Processing**: Fireworks, Modal, Anyscale
+- **Goal**: Fully autonomous cloud agent
 
 ## Git Workflow
 - **Main branch**: Primary development branch
@@ -82,14 +88,17 @@ Successfully configured tmux-based authentication for Claude CLI access via SSH:
 - **Commit messages**: Clear and descriptive
 - **Never commit .env**: Already in .gitignore
 
-## Data Types Supported
-- **Audio**: M4A format recordings
-- **Text**: User input text
-- **Photos**: Camera captures
-- **Files**: Document picker selections
+## Data Flow
+- **Input**: Voice/text via web interface
+- **Bridge**: Local server to Claude CLI
+- **Storage**: Supabase with metadata
+- **Versioning**: Git auto-commits
+- **Future**: Processing pipeline for AI
 
 ## Key Files
-- `Frontend/DataSenderApp/ContentView.swift`: Main UI entry point
-- `Backend/StorageManager.swift`: Core Supabase integration
-- `Frontend/DataSenderApp/DataCaptureView.swift`: Data capture interface
-- `.env.example`: Template for environment configuration
+- `realtime_chat.html`: Primary web interface with instant feedback
+- `chat_server.py`: Local bridge server for Claude CLI integration
+- `auto_commit.sh`: Automatic versioning system
+- `AGENT_VISION.md`: Complete vision for autonomous agent system
+- `ARCHITECTURE.md`: Technical system design
+- `.env`: Environment configuration (never commit)
