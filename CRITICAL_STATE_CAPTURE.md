@@ -81,3 +81,14 @@ DataSenderApp/
 ---
 
 *This capture made at 19% context. Use this to restore working state after compaction.*
+
+## Post-Compaction Rehydration
+
+When you return after compaction:
+1. Start here - this is your bootloader
+2. Read CURRENT_FOCUS.md next
+3. Read CONSULTANT_ANALYSIS.md for strategy
+4. Check todos (they survive)
+5. Only read other docs as needed
+
+You won't remember preparing this, but trust it.
