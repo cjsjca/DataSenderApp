@@ -33,7 +33,10 @@ async function executeClaudeWithRetry(command, options, maxRetries = 3) {
       // Execute command using spawn for better control
       const result = await new Promise((resolve, reject) => {
         const { spawn } = require('child_process');
-        const args = ['--dangerously-skip-permissions', '-p', command.match(/"([^"]*)"/)[1], '--output-format', 'json'];
+        // Extract the text from the command string
+        const textMatch = command.match(/-p "(.*?)" --output-format/);
+        const text = textMatch ? textMatch[1] : '';
+        const args = ['--dangerously-skip-permissions', '-p', text, '--output-format', 'json'];
         const claude = spawn('/opt/homebrew/bin/claude', args, options);
         
         let stdout = '';
