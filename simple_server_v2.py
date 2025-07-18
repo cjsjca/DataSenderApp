@@ -166,7 +166,7 @@ class ChatHandler(http.server.SimpleHTTPRequestHandler):
         sys.stderr.flush()
 
 if __name__ == '__main__':
-    PORT = 8080
+    PORT = 8081
     
     # Start Claude in background thread
     claude_thread = threading.Thread(target=run_claude)
