@@ -1,16 +1,16 @@
 # Current Focus - Active Priorities
 
-This document tracks what we're actively focused on RIGHT NOW. It provides context for which insights are most relevant at this moment.
+This document tracks the project's active priorities.
 
-## Current Focus (2025-01-18) - AT 19% CONTEXT!
+## Current Focus
 
-### 🎯 Primary: TEST MCP TOOLS (Must restart Claude)
-We configured MCP but haven't tested it yet. This is THE unlock for exponential capability.
+### 🎯 Primary: TEST MCP TOOLS
+Test Model Context Protocol integration for enhanced capabilities.
 
-**Immediate Actions**:
-- Exit and restart Claude with --resume
-- Test twin instances communicating via MCP
-- Prove the exponential vs linear paradigm
+**Actions**:
+- Verify MCP configuration
+- Test twin Claude instances communicating via MCP
+- Document results
 
 ### 🧠 Secondary: Browser Interface for Cognitive Flow
 Creating "the browser" - a web interface that enables the same voice-first cognitive flow as terminal, accessible from anywhere.
