@@ -7,7 +7,7 @@ echo "This will demonstrate two Claude instances communicating through Supabase 
 echo ""
 echo "Steps:"
 echo "1. Terminal 1 (this window): Claude Instance 1"
-echo "2. Terminal 2: cd ~/Projects/DataSenderApp/claude_instance_2"
+echo "2. Terminal 2: cd ~/Projects/ClaudeInstance2"
 echo "3. Terminal 2: claude --dangerously-skip-permissions-check"
 echo ""
 echo "In Terminal 2, when Claude starts, say:"
@@ -25,4 +25,8 @@ if [ ! -f ".mcp.json" ]; then
 fi
 
 # Start Claude with MCP-first reminder
-claude --dangerously-skip-permissions-check -m "Remember: Use MCP tools first! They give exponential power. To communicate with another Claude instance, use Supabase MCP to insert messages with [CLAUDE_1] tag."
+echo "Once Claude starts, tell it to:"
+echo "  - Send messages to Instance 2 using Supabase MCP with [CLAUDE_1] tag"
+echo "  - Check for responses with [CLAUDE_2] tag"
+echo ""
+claude --dangerously-skip-permissions-check
