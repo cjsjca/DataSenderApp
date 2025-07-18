@@ -2,6 +2,21 @@
 # Lightweight auto-commit system using fswatch
 # Captures all changes instantly without slowing down work
 
+# Prevent multiple instances
+LOCKFILE="/tmp/datasenderapp-autocommit.lock"
+if [ -f "$LOCKFILE" ]; then
+    PID=$(cat "$LOCKFILE")
+    if ps -p "$PID" > /dev/null 2>&1; then
+        echo "Auto-commit already running (PID: $PID)"
+        exit 0
+    else
+        echo "Removing stale lock file"
+        rm "$LOCKFILE"
+    fi
+fi
+echo $$ > "$LOCKFILE"
+trap "rm -f $LOCKFILE" EXIT
+
 # Check if fswatch is installed
 if ! command -v fswatch &> /dev/null; then
     echo "fswatch not found. Install with: brew install fswatch"

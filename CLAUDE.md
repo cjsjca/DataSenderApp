@@ -4,11 +4,18 @@
 This project includes an automatic commit system (`auto_commit.sh`) that:
 - **Watches for file changes** and commits after 5 seconds of inactivity
 - **Pushes to GitHub** every 30 minutes
-- **Starts automatically** via:
-  - Shell profile (~/.zshrc) when opening new terminals
-  - LaunchAgent (com.datasenderapp.autocommit) at system login
-- **Prevents duplicates** by checking if already running
+- **Performance optimized**: Uses minimal CPU with fswatch
+- **Prevents duplicates** with lockfile at `/tmp/datasenderapp-autocommit.lock`
 - **Logs output** to /tmp/datasenderapp-autocommit.log
+
+### Starting Auto-Commit
+**Manual start recommended** (to prevent multiple instances):
+```bash
+cd ~/Projects/DataSenderApp
+./auto_commit.sh &
+```
+
+**Auto-start disabled** in .zshrc and LaunchAgent due to spawn issues
 
 ## Claude CLI Remote Access (Subscription Authentication)
 Successfully configured tmux-based authentication for Claude CLI access via SSH:
