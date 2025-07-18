@@ -115,3 +115,54 @@ DataSenderApp/
 - **stdin/stdout** - Standard input/output streams for process communication
 
 This architecture provides a clean separation between the user interface and the Claude CLI processing, with a Python server acting as the bridge between them.
+
+## Future Enhancement: Multi-Agent Toggle
+
+A natural evolution of this architecture is to support multiple agents with different specializations:
+
+### Use Case
+Currently, users often consult with one AI (like ChatGPT) for planning/architecture, then manually copy-paste to Claude CLI for implementation. This creates friction.
+
+### Proposed Solution
+Run two Claude CLI instances as separate subprocesses, each with a different role:
+
+```
+Frontend Web App
+    ↓        ↓
+Backend Server
+    ↓        ↓
+Claude 1   Claude 2
+(Consultant) (Coder)
+```
+
+### Implementation Concept
+```python
+# Two separate Claude instances
+claude_consultant = subprocess.Popen(['claude'], ...)
+claude_coder = subprocess.Popen(['claude'], ...)
+
+# Route based on mode
+if mode == 'consultant':
+    claude_consultant.stdin.write(message)
+else:
+    claude_coder.stdin.write(message)
+
+# Transfer between agents
+def send_to_coder():
+    last_response = consultant_queue.get_last()
+    claude_coder.stdin.write(f"Implement this: {last_response}")
+```
+
+### UI Changes Needed
+- Mode toggle: [Consultant] [Coder]
+- "Send to Coder →" button
+- Different visual themes per mode
+- Optional split-view for both conversations
+
+### Benefits
+- Eliminates copy-paste friction
+- Each agent can be prompted for its specialty
+- Same infrastructure, minimal new code
+- Solves real workflow problem
+
+This can be implemented with current architecture - no MCP or complex protocols needed.
