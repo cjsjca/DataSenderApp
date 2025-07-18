@@ -38,7 +38,14 @@ app.post('/api/claude', (req, res) => {
     maxBuffer: 1024 * 1024 * 10 // 10MB buffer
   };
   
+  console.log('Executing command:', command);
+  
   exec(command, options, (error, stdout, stderr) => {
+    console.log('Command completed');
+    console.log('Error:', error);
+    console.log('Stdout:', stdout);
+    console.log('Stderr:', stderr);
+    
     if (error) {
       console.error('Claude execution error:', error.message);
       console.error('stderr:', stderr);
