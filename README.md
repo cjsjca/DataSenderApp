@@ -7,14 +7,14 @@
 
 ## Description
 
-DataSenderApp is a SwiftUI iOS application that provides a seamless interface for capturing and uploading various types of data to Supabase. Users can record audio, input text, take photos, or select files from their device and immediately upload them to Supabase storage.
+DataSenderApp is a pure SwiftUI iOS application that provides a seamless interface for capturing and uploading various types of data to Supabase. Built entirely with SwiftUI (no UIKit wrappers), users can record audio, input text, select photos, or choose files from their device and immediately upload them to Supabase storage.
 
 ## Features
 
-- **🎙️ Audio Recording** - Record audio using AVAudioRecorder and upload to Supabase storage
-- **📝 Text Input** - Multiline TextEditor & JSON POST to Supabase
-- **📷 Photo Capture** - Camera UI & image upload to Supabase
-- **📁 File Upload** - Select any file type using UIDocumentPicker and upload to Supabase
+- **🎙️ Audio Recording** - Pure SwiftUI controls driving AVAudioRecorder for audio capture and upload
+- **📝 Text Input** - Native SwiftUI TextEditor with JSON POST to Supabase
+- **📷 Photo Selection** - SwiftUI PhotosPicker for selecting images from the photo library
+- **📁 File Upload** - SwiftUI's native fileImporter for selecting and uploading any file type
 - **☁️ Supabase Integration** - All data is securely stored in Supabase with proper authentication
 - **🔐 Secure Credentials** - Environment-based configuration for API keys and tokens
 
@@ -75,8 +75,8 @@ DataSenderApp is a SwiftUI iOS application that provides a seamless interface fo
 
 ```
 DataSenderApp/
-├── Frontend/                 # UI Layer
-│   ├── ContentView.swift    # Main UI with four action buttons
+├── Frontend/                 # UI Layer (Pure SwiftUI)
+│   ├── ContentView.swift    # Main UI with pure SwiftUI components
 │   └── DataSenderApp.swift  # App entry point
 ├── Backend/                 # Business Logic
 │   ├── AudioRecorder.swift  # Audio recording functionality
@@ -120,23 +120,58 @@ The app allows users to input multiline text through a TextEditor and store it i
 3. Tap "Send" to upload to Supabase
 4. The text is stored in the `texts` table with the schema above
 
-### Photo Capture
-The app provides a native camera interface for capturing photos and uploading them to Supabase storage:
+### Photo Selection
+The app uses SwiftUI's native PhotosPicker for selecting and uploading photos:
 
 **Flow:**
-1. Tap the "Take Photo" button
-2. Grant camera permissions when prompted
-3. The native iOS camera picker appears
-4. Take a photo using the camera
-5. The photo is automatically converted to JPEG format (80% quality)
-6. Uploaded to the "uploads" bucket in Supabase storage
-7. Success/error alert displays the result
-8. File is stored with a unique UUID-based filename
+1. Tap the "Select Photo" button
+2. The native iOS photo picker appears
+3. Select a photo from your library
+4. The photo is automatically converted to JPEG format (80% quality)
+5. Uploaded to the "uploads" bucket in Supabase storage
+6. Success/error alert displays the result
+7. File is stored with a unique UUID-based filename
 
 **Storage Format:**
 - Bucket: `uploads`
 - Filename: `photo-{UUID}.jpg`
 - MIME type: `image/jpeg`
+
+### File Upload
+The app uses SwiftUI's native fileImporter to allow users to select and upload any file type:
+
+**Flow:**
+1. Tap the "Upload File" button
+2. A file picker appears (on simulator, this shows the Mac file browser)
+3. Select any file type from your file system
+4. The file is automatically uploaded to Supabase storage
+5. Success/error alert displays the result
+6. Files are stored with their original filenames
+
+**Storage Format:**
+- Bucket: `uploads`
+- Filename: Original filename with UUID prefix for uniqueness
+- MIME type: Automatically detected based on file extension
+
+**Simulator Note:** When running in the iOS Simulator, the fileImporter displays the Mac's native file browser, allowing easy testing with files from your Mac's file system.
+
+### Audio Recording
+The app provides audio recording functionality with a pure SwiftUI interface:
+
+**Flow:**
+1. Tap the "Record Audio" button (turns red when recording)
+2. Grant microphone permissions when prompted
+3. The app begins recording using AVAudioRecorder under the hood
+4. Tap "Stop Recording" to end the recording
+5. Audio is automatically uploaded as M4A format to Supabase storage
+6. Success/error alert displays the result
+
+**Storage Format:**
+- Bucket: `uploads`
+- Filename: `audio-{UUID}.m4a`
+- MIME type: `audio/m4a`
+
+**Architecture Note:** While the UI is pure SwiftUI, AVAudioRecorder is used under the hood for actual audio capture, as SwiftUI doesn't yet provide native audio recording APIs.
 
 ## Supabase MCP Integration
 

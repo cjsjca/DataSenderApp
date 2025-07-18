@@ -1,5 +1,4 @@
 import SwiftUI
-import AVFoundation
 import PhotosUI
 import UniformTypeIdentifiers
 import Supabase
@@ -12,9 +11,8 @@ struct ContentView: View {
     @State private var isRecording = false
     @State private var showTextInput = false
     @State private var textInput = ""
-    @State private var showCamera = false
     @State private var showFilePicker = false
-    @State private var showImagePicker = false
+    @State private var selectedPhotoItem: PhotosPickerItem?
     @State private var selectedImage: UIImage?
     @State private var isUploading = false
     @State private var uploadStatus = ""
@@ -76,8 +74,8 @@ struct ContentView: View {
                 .padding(.horizontal)
             }
             
-            Button(action: takePhoto) {
-                Text("Take Photo")
+            PhotosPicker(selection: $selectedPhotoItem, matching: .images) {
+                Text("Select Photo")
                     .frame(maxWidth: .infinity)
                     .padding()
                     .background(Color.accentColor)
@@ -85,7 +83,7 @@ struct ContentView: View {
                     .cornerRadius(10)
             }
             .disabled(isUploading)
-            .accessibilityIdentifier("takePhotoButton")
+            .accessibilityIdentifier("selectPhotoButton")
             
             Button(action: { showFilePicker = true }) {
                 Text("Upload File")
@@ -114,21 +112,36 @@ struct ContentView: View {
             }
             .padding()
         }
-        .fullScreenCover(isPresented: $showCamera) {
-            ImagePicker(selectedImage: $selectedImage, sourceType: .camera)
-                .ignoresSafeArea()
-        }
-        .sheet(isPresented: $showFilePicker) {
-            DocumentPicker(completion: uploadFile)
+        .fileImporter(
+            isPresented: $showFilePicker,
+            allowedContentTypes: [.item],
+            allowsMultipleSelection: false
+        ) { result in
+            switch result {
+            case .success(let urls):
+                if let url = urls.first {
+                    uploadFile(url: url)
+                }
+            case .failure(let error):
+                uploadStatus = "Failed to select file: \(error.localizedDescription)"
+                showAlert = true
+                alertMessage = "Failed to select file: \(error.localizedDescription)"
+            }
         }
         .alert("Upload Result", isPresented: $showAlert) {
             Button("OK", role: .cancel) { }
         } message: {
             Text(alertMessage)
         }
-        .onChange(of: selectedImage) { oldValue, newValue in
-            if let image = newValue {
-                uploadImage(image)
+        .onChange(of: selectedPhotoItem) { oldValue, newValue in
+            Task {
+                if let item = newValue {
+                    if let data = try? await item.loadTransferable(type: Data.self),
+                       let image = UIImage(data: data) {
+                        selectedImage = image
+                        uploadImage(image)
+                    }
+                }
             }
         }
         .onAppear {
@@ -179,17 +192,6 @@ struct ContentView: View {
         }
     }
     
-    func takePhoto() {
-        AVCaptureDevice.requestAccess(for: .video) { granted in
-            DispatchQueue.main.async {
-                if granted {
-                    showCamera = true
-                } else {
-                    uploadStatus = "Camera permission denied"
-                }
-            }
-        }
-    }
     
     func uploadAudio(url: URL) {
         guard let storageManager = storageManager else { return }
@@ -221,18 +223,22 @@ struct ContentView: View {
     
     func uploadImage(_ image: UIImage) {
         guard let storageManager = storageManager else { return }
+        guard let imageData = image.jpegData(compressionQuality: 0.8) else {
+            uploadStatus = "Failed to convert image to JPEG data"
+            return
+        }
         
         isUploading = true
         uploadStatus = ""
         
         Task {
             do {
-                let key = try await storageManager.uploadImage(image)
+                let key = try await storageManager.uploadImage(imageData)
                 await MainActor.run {
                     isUploading = false
                     uploadStatus = "Photo uploaded successfully"
                     selectedImage = nil
-                    showCamera = false  // Dismiss the camera picker
+                    selectedPhotoItem = nil
                     showAlert = true
                     alertMessage = "Photo uploaded successfully to: \(key)"
                     print("Stored at:", key)
@@ -241,7 +247,7 @@ struct ContentView: View {
                 await MainActor.run {
                     isUploading = false
                     uploadStatus = "Failed to upload photo: \(error.localizedDescription)"
-                    showCamera = false  // Dismiss the camera picker
+                    selectedPhotoItem = nil
                     showAlert = true
                     alertMessage = "Failed to upload photo: \(error.localizedDescription)"
                 }
@@ -286,73 +292,7 @@ struct ContentView: View {
     }
 }
 
-struct ImagePicker: UIViewControllerRepresentable {
-    @Binding var selectedImage: UIImage?
-    let sourceType: UIImagePickerController.SourceType
-    @Environment(\.presentationMode) private var presentationMode
-    
-    func makeUIViewController(context: Context) -> UIImagePickerController {
-        let picker = UIImagePickerController()
-        picker.sourceType = sourceType
-        picker.delegate = context.coordinator
-        return picker
-    }
-    
-    func updateUIViewController(_ uiViewController: UIImagePickerController, context: Context) {}
-    
-    func makeCoordinator() -> Coordinator {
-        Coordinator(self)
-    }
-    
-    class Coordinator: NSObject, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
-        let parent: ImagePicker
-        
-        init(_ parent: ImagePicker) {
-            self.parent = parent
-        }
-        
-        func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
-            if let image = info[.originalImage] as? UIImage {
-                parent.selectedImage = image
-            }
-            parent.presentationMode.wrappedValue.dismiss()
-        }
-        
-        func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
-            parent.presentationMode.wrappedValue.dismiss()
-        }
-    }
-}
 
-struct DocumentPicker: UIViewControllerRepresentable {
-    let completion: (URL) -> Void
-    
-    func makeUIViewController(context: Context) -> UIDocumentPickerViewController {
-        let picker = UIDocumentPickerViewController(forOpeningContentTypes: [.item], asCopy: true)
-        picker.delegate = context.coordinator
-        return picker
-    }
-    
-    func updateUIViewController(_ uiViewController: UIDocumentPickerViewController, context: Context) {}
-    
-    func makeCoordinator() -> Coordinator {
-        Coordinator(completion: completion)
-    }
-    
-    class Coordinator: NSObject, UIDocumentPickerDelegate {
-        let completion: (URL) -> Void
-        
-        init(completion: @escaping (URL) -> Void) {
-            self.completion = completion
-        }
-        
-        func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
-            if let url = urls.first {
-                completion(url)
-            }
-        }
-    }
-}
 
 #Preview {
     ContentView()
