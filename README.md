@@ -1,6 +1,6 @@
 # DataSenderApp
 
-A simple text streaming bridge between browser and Claude CLI.
+A web application for real-time text streaming to Claude CLI.
 
 ## Quick Start
 
