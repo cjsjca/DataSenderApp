@@ -9,13 +9,21 @@ This project includes an automatic commit system (`auto_commit.sh`) that:
 - **Logs output** to /tmp/datasenderapp-autocommit.log
 
 ### Starting Auto-Commit
-**Manual start recommended** (to prevent multiple instances):
+**Currently running!** The auto-commit system is active and monitoring changes.
+
+**Manual start** (if needed):
 ```bash
 cd ~/Projects/DataSenderApp
-./auto_commit.sh &
+./auto_commit.sh > /tmp/datasenderapp-autocommit.log 2>&1 &
 ```
 
-**Auto-start disabled** in .zshrc and LaunchAgent due to spawn issues
+**Check status**:
+```bash
+ps aux | grep fswatch | grep -v grep
+tail -f /tmp/datasenderapp-autocommit.log
+```
+
+**Note**: Auto-start from .zshrc disabled to prevent conflicts. LaunchAgent available but manual start recommended.
 
 ## Claude CLI Remote Access (Subscription Authentication)
 Successfully configured tmux-based authentication for Claude CLI access via SSH:
