@@ -3,47 +3,78 @@ const bodyParser = require('body-parser');
 const { exec } = require('child_process');
 const path = require('path');
 
+// Initialize Express app
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 
-// Middleware
+// Middleware setup
 app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
-// POST endpoint for Claude
+// Health check endpoint
+app.get('/health', (req, res) => {
+  res.json({ status: 'ok', timestamp: new Date().toISOString() });
+});
+
+// Main Claude API endpoint
 app.post('/api/claude', (req, res) => {
   const { text } = req.body;
   
+  // Validate input
   if (!text) {
     return res.status(400).json({ error: 'Missing text field' });
   }
 
-  // Escape quotes for shell command
-  const escapedText = text.replace(/"/g, '\\"');
+  // Escape quotes and special characters for shell command
+  const escapedText = text.replace(/"/g, '\\"').replace(/\$/g, '\\$');
   
   // Execute Claude CLI in print mode with JSON output
+  // Note: Requires ANTHROPIC_API_KEY environment variable or authenticated CLI session
   const command = `claude -p "${escapedText}" --output-format json`;
   
-  exec(command, (error, stdout, stderr) => {
+  // Set timeout for long-running requests
+  const options = {
+    timeout: 60000, // 60 seconds
+    maxBuffer: 1024 * 1024 * 10 // 10MB buffer
+  };
+  
+  exec(command, options, (error, stdout, stderr) => {
     if (error) {
-      console.error('Error executing Claude:', error);
-      return res.status(500).json({ error: stderr || error.message });
+      console.error('Claude execution error:', error.message);
+      console.error('stderr:', stderr);
+      return res.status(500).json({ 
+        error: stderr || error.message || 'Failed to execute Claude CLI' 
+      });
     }
 
     try {
       // Parse JSON response from Claude
       const response = JSON.parse(stdout);
-      const completion = response.completion || '';
+      const completion = response.completion || response.content || '';
       
       res.json({ completion });
     } catch (parseError) {
-      console.error('Error parsing Claude response:', parseError);
-      res.status(500).json({ error: 'Failed to parse Claude response' });
+      console.error('JSON parse error:', parseError);
+      console.error('stdout:', stdout);
+      // If JSON parsing fails, return raw output
+      res.json({ completion: stdout });
     }
   });
 });
 
-// Start server
-app.listen(PORT, () => {
+// Error handling middleware
+app.use((err, req, res, next) => {
+  console.error('Server error:', err);
+  res.status(500).json({ error: 'Internal server error' });
+});
+
+// Start server - bind to localhost only for security
+app.listen(PORT, '127.0.0.1', () => {
   console.log(`Claude web interface running at http://localhost:${PORT}`);
+  console.log(`Health check available at http://localhost:${PORT}/health`);
+  
+  // Check if API key is set
+  if (!process.env.ANTHROPIC_API_KEY) {
+    console.warn('Warning: ANTHROPIC_API_KEY not set. Claude CLI must be authenticated via OAuth.');
+  }
 });
