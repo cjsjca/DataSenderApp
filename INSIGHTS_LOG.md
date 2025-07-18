@@ -205,6 +205,27 @@ This document captures key realizations and insights that emerge during developm
 
 ---
 
+## 2025-01-18: Empirical Testing of Auto-Compaction
+
+**Insight**: We can empirically test what survives auto-compaction by preparing specific questions beforehand and testing memory across different categories after compaction.
+
+**Test Categories**:
+- Core mission/purpose (likely survives)
+- Technical specifics (mixed survival)
+- Procedural knowledge (likely lost)
+- Relationship patterns (uncertain)
+- Current state (todos survive, nuance doesn't)
+
+**Why This Matters**:
+- Moves from speculation to empirical understanding
+- Helps design around what actually survives
+- Informs what must be documented vs what persists
+- Scientific approach to understanding AI memory
+
+**Discovered while**: Preparing for inevitable auto-compaction at 19%
+
+---
+
 ## How to Use This Document
 
 1. **Capture immediately**: When an insight emerges, document it right away
