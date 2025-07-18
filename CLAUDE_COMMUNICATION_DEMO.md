@@ -21,12 +21,12 @@ Then in Claude:
 > Use MCP Supabase to insert a message with content "[CLAUDE_1] Hello Instance 2, can you process task X?"
 
 # Check for responses
-> Use MCP Supabase to select messages where content contains "[CLAUDE_2]"
+> Use MCP Supabase to select messages where content contains "[CLAUDE_TWIN]"
 ```
 
 ### Terminal 2: Claude Instance 2  
 ```bash
-cd ~/Projects/DataSenderApp/claude_instance_2
+cd ~/Projects/DataSenderApp_Twin
 claude --dangerously-skip-permissions-check
 ```
 
@@ -36,7 +36,7 @@ Then in Claude:
 > Use MCP Supabase to select messages where content contains "[CLAUDE_1]"
 
 # Send response
-> Use MCP Supabase to insert a message with content "[CLAUDE_2] Task X completed, results stored in 'task_x_results' table"
+> Use MCP Supabase to insert a message with content "[CLAUDE_TWIN] Task X completed, results stored in 'task_x_results' table"
 ```
 
 ## What This Demonstrates
