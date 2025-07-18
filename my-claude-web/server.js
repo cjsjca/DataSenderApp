@@ -1,5 +1,5 @@
 const express = require('express');
-const { spawn } = require('child_process');
+const pty = require('node-pty');
 const path = require('path');
 
 // Initialize Express app
@@ -15,8 +15,86 @@ app.get('/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
-// Helper function to spawn Claude with retry logic
-async function spawnClaudeWithRetry(userPrompt, maxRetries = 3) {
+// Function to run Claude CLI with pseudo-TTY
+async function runClaude(promptText) {
+  return new Promise((resolve, reject) => {
+    console.log(`Spawning Claude CLI with prompt: "${promptText}"`);
+    
+    // Spawn Claude with a pseudo-TTY
+    const ptyProcess = pty.spawn('/opt/homebrew/bin/claude', [
+      '-p',
+      promptText,
+      '--dangerously-skip-permissions',
+      '--output-format',
+      'json'
+    ], {
+      name: 'xterm-color',
+      cwd: process.cwd(),
+      env: process.env
+    });
+    
+    let buffer = '';
+    let hasResolved = false;
+    
+    // Handle data from the PTY
+    ptyProcess.onData((data) => {
+      buffer += data;
+      console.log('PTY data chunk:', data);
+      
+      // Try to parse JSON from buffer
+      // Look for complete JSON objects in the buffer
+      const lines = buffer.split('\n');
+      for (const line of lines) {
+        const trimmed = line.trim();
+        if (trimmed.startsWith('{') && trimmed.endsWith('}')) {
+          try {
+            const parsed = JSON.parse(trimmed);
+            console.log('Successfully parsed JSON:', parsed);
+            
+            // Extract completion from various possible fields
+            const completion = parsed.result || 
+                             parsed.completion || 
+                             parsed.content || 
+                             parsed.output || 
+                             '';
+            
+            hasResolved = true;
+            ptyProcess.kill();
+            resolve(completion);
+            return;
+          } catch (e) {
+            // Not valid JSON, continue
+          }
+        }
+      }
+    });
+    
+    // Handle PTY exit
+    ptyProcess.onExit((exitCode) => {
+      console.log(`PTY process exited with code: ${exitCode}`);
+      if (!hasResolved) {
+        if (exitCode === 0) {
+          reject(new Error('Claude exited without producing valid JSON output'));
+        } else {
+          reject(new Error(`Claude exited with code ${exitCode}`));
+        }
+      }
+    });
+    
+    // Set a timeout to prevent hanging forever
+    setTimeout(() => {
+      if (!hasResolved) {
+        console.log('Timeout reached, killing PTY process');
+        hasResolved = true;
+        ptyProcess.kill();
+        reject(new Error('Claude CLI timed out after 30 seconds'));
+      }
+    }, 30000); // 30 second timeout
+  });
+}
+
+// Function to run Claude with retry logic
+async function runClaudeWithRetry(promptText, maxRetries = 3) {
   const delays = [1000, 2000, 4000]; // Exponential backoff delays in ms
   
   for (let attempt = 0; attempt <= maxRetries; attempt++) {
@@ -28,107 +106,25 @@ async function spawnClaudeWithRetry(userPrompt, maxRetries = 3) {
         await new Promise(resolve => setTimeout(resolve, delay));
       }
       
-      // Spawn Claude and get result
-      const result = await new Promise((resolve, reject) => {
-        console.log(`Spawning Claude CLI (attempt ${attempt + 1})...`);
-        
-        // Spawn the Claude CLI process
-        const claude = spawn('/opt/homebrew/bin/claude', [
-          '-p',
-          userPrompt,
-          '--dangerously-skip-permissions',
-          '--output-format',
-          'json'
-        ], {
-          env: process.env, // Inherit all environment variables including HOME for ~/.claude
-          stdio: ['pipe', 'pipe', 'pipe'] // Pipe stdin, stdout, stderr
-        });
-        
-        let stdoutBuffer = '';
-        let stderrBuffer = '';
-        let hasResolved = false;
-        
-        // Handle stdout data
-        claude.stdout.on('data', (chunk) => {
-          stdoutBuffer += chunk.toString();
-          
-          // Try to parse JSON if we have what looks like a complete object
-          const trimmed = stdoutBuffer.trim();
-          if (trimmed.startsWith('{') && trimmed.endsWith('}')) {
-            try {
-              const parsed = JSON.parse(trimmed);
-              console.log('Successfully parsed JSON response');
-              hasResolved = true;
-              resolve({ json: parsed, stderr: stderrBuffer });
-            } catch (e) {
-              // Not valid JSON yet, keep buffering
-            }
-          }
-        });
-        
-        // Handle stderr data
-        claude.stderr.on('data', (chunk) => {
-          const data = chunk.toString();
-          stderrBuffer += data;
-          console.error('Claude stderr:', data);
-        });
-        
-        // Handle process errors
-        claude.on('error', (error) => {
-          console.error('Claude spawn error:', error);
-          if (!hasResolved) {
-            hasResolved = true;
-            reject(new Error(`Failed to spawn Claude: ${error.message}`));
-          }
-        });
-        
-        // Handle process close
-        claude.on('close', (code) => {
-          if (!hasResolved) {
-            console.log(`Claude process exited with code ${code}`);
-            
-            // Check for overloaded error in stderr
-            if (stderrBuffer.toLowerCase().includes('overloaded')) {
-              reject(new Error('OVERLOADED'));
-            } else if (code !== 0) {
-              reject(new Error(`Claude exited with code ${code}: ${stderrBuffer || 'No error output'}`));
-            } else {
-              // Process succeeded but no JSON was captured
-              reject(new Error('No valid JSON response from Claude'));
-            }
-          }
-        });
-        
-        // Timeout after 30 seconds to prevent hanging
-        setTimeout(() => {
-          if (!hasResolved) {
-            console.log('Timeout reached, terminating Claude process');
-            claude.kill('SIGTERM');
-            // Force kill after 5 more seconds if needed
-            setTimeout(() => {
-              if (!hasResolved) {
-                claude.kill('SIGKILL');
-              }
-            }, 5000);
-          }
-        }, 30000);
-      });
-      
-      // Success - return the result
-      return result;
+      console.log(`Attempt ${attempt + 1} of ${maxRetries + 1}`);
+      const completion = await runClaude(promptText);
+      return completion;
       
     } catch (error) {
+      console.error(`Attempt ${attempt + 1} failed:`, error.message);
+      
       // Check if it's an overloaded error
-      if (error.message === 'OVERLOADED') {
+      if (error.message && error.message.toLowerCase().includes('overloaded')) {
         console.log('Claude API overloaded, will retry...');
         // Continue to next retry unless we're out of attempts
         if (attempt === maxRetries) {
           throw new Error('SERVICE_OVERLOADED');
         }
-      } else {
-        // Other errors - throw immediately
+      } else if (attempt === maxRetries) {
+        // Out of retries for other errors
         throw error;
       }
+      // Continue to next attempt
     }
   }
 }
@@ -145,16 +141,8 @@ app.post('/api/claude', async (req, res) => {
   
   try {
     // Call Claude with retry logic
-    const result = await spawnClaudeWithRetry(text);
+    const completion = await runClaudeWithRetry(text);
     
-    // Extract completion from the JSON response
-    const completion = result.json.result || 
-                      result.json.completion || 
-                      result.json.content || 
-                      result.json.output || 
-                      '';
-    
-    // Log successful completion
     console.log('Successfully got completion from Claude');
     
     // Send response
@@ -186,9 +174,10 @@ app.use((err, req, res, next) => {
 
 // Start the server
 app.listen(PORT, '127.0.0.1', () => {
-  console.log(`\n🚀 Claude Web Interface Server`);
+  console.log(`\n🚀 Claude Web Interface Server (with PTY support)`);
   console.log(`📍 Running at: http://localhost:${PORT}`);
   console.log(`🔧 Health check: http://localhost:${PORT}/health`);
   console.log(`\n✅ Using subscription-authenticated Claude CLI from ~/.claude`);
+  console.log(`✅ Using node-pty for proper TTY emulation`);
   console.log(`⚠️  Make sure you've run 'claude --dangerously-skip-permissions' once interactively\n`);
 });
