@@ -15,6 +15,12 @@ IMPORTANT: Critical realizations are captured in INSIGHTS_LOG.md
 - Captures relationship between human-AI collaboration insights
 - Tracks evolution of understanding over time
 
+## Agent Protocol
+IMPORTANT: Follow AGENT_PROTOCOL.md for standard procedures
+- Startup protocol after compaction
+- Todo list is the bootstrap mechanism
+- First todo should always be "READ CRITICAL_STATE_CAPTURE.md"
+
 ## Auto-Commit System
 This project includes an automatic commit system (`auto_commit.sh`) that:
 - **Watches for file changes** and commits after 5 seconds of inactivity
