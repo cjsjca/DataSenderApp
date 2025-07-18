@@ -12,7 +12,7 @@ DataSenderApp is a SwiftUI iOS application that provides a seamless interface fo
 ## Features
 
 - **🎙️ Audio Recording** - Record audio using AVAudioRecorder and upload to Supabase storage
-- **📝 Text Input** - Enter text with a SwiftUI TextEditor and store in Supabase database
+- **📝 Text Input** - Multiline TextEditor & JSON POST to Supabase
 - **📷 Photo Capture** - Take photos using the camera and upload to Supabase storage
 - **📁 File Upload** - Select any file type using UIDocumentPicker and upload to Supabase
 - **☁️ Supabase Integration** - All data is securely stored in Supabase with proper authentication
@@ -25,6 +25,24 @@ DataSenderApp is a SwiftUI iOS application that provides a seamless interface fo
 - **Swift 5.8+** - Modern Swift language features
 - **Supabase Account** - For backend storage and database
 - **GitHub Account** - For version control and CI/CD
+
+## Code-First Project Setup
+
+1. **Install XcodeGen** with `brew install xcodegen`
+
+2. **Ensure project.yml exists** at the repo root defining the DataSenderApp and test bundle targets (Debug/Release with `ENABLE_TESTABILITY = YES` in Debug, sources under `Frontend/`, `Backend/`, and test sources under `Tests/UnitTests` and `Tests/UITests`)
+
+3. **Generate the Xcode project** by running `xcodegen generate`
+
+4. **Build the app** via shell MCP using:
+   ```bash
+   claude mcp run shell -- xcodebuild build -project DataSenderApp.xcodeproj -scheme DataSenderApp -destination "platform=iOS Simulator,name=iPhone 16,OS=18.5"
+   ```
+
+5. **Run tests** via shell MCP using:
+   ```bash
+   claude mcp run shell -- xcodebuild test -project DataSenderApp.xcodeproj -scheme DataSenderApp -destination "platform=iOS Simulator,name=iPhone 16,OS=18.5"
+   ```
 
 ## Installation
 
@@ -40,20 +58,19 @@ DataSenderApp is a SwiftUI iOS application that provides a seamless interface fo
    # Edit .env with your actual credentials
    ```
 
-3. **Open in Xcode**
+3. **Generate the Xcode project**
    ```bash
-   open DataSenderApp.xcodeproj
+   xcodegen generate
    ```
 
-4. **Install dependencies**
-   - Xcode will automatically resolve Swift Package Manager dependencies
-   - Main dependencies:
+4. **Dependencies**
+   - Swift Package Manager dependencies are defined in `project.yml`:
      - [Supabase Swift](https://github.com/supabase-community/supabase-swift)
      - [DotEnvSwift](https://github.com/swiftpackages/DotEnv)
 
-5. **Run the app**
-   - Select your target device/simulator
-   - Press ⌘R or click the Run button
+5. **Build and run**
+   - Use the xcodebuild commands from the Code-First Project Setup section
+   - Or open the generated project: `open DataSenderApp.xcodeproj`
 
 ## Project Structure
 
@@ -85,6 +102,24 @@ DataSenderApp/
 ├── .env.example            # Environment template
 └── README.md               # This file
 ```
+
+## Usage
+
+### Text Input
+The app allows users to input multiline text through a TextEditor and store it in Supabase. The data is sent as JSON to the `texts` table:
+
+**JSON Schema:**
+```json
+{
+  "content": "<user input>"
+}
+```
+
+**Example Usage:**
+1. Tap the "Text Input" button
+2. Type or paste text in the TextEditor
+3. Tap "Send" to upload to Supabase
+4. The text is stored in the `texts` table with the schema above
 
 ## Supabase MCP Integration
 
@@ -189,23 +224,49 @@ claude-init
 
 This way, you can quickly bootstrap Claude's memory for any project, ensuring it understands your project conventions, test commands, and specific requirements from the start of each session.
 
+### Troubleshooting: Project Path Changes
+
+1. **Launch Claude Code in the correct directory:**
+   ```bash
+   cd ~/Projects/DataSenderApp
+   claude
+   ```
+
+2. **Re-open the Xcode project:**
+   ```bash
+   open ~/Projects/DataSenderApp/DataSenderApp.xcodeproj
+   ```
+
+3. **Refresh persistent memory:**
+   ```bash
+   /clear
+   /init
+   ```
+
+4. **Re-register MCP servers if needed** using your one-block registration prompts from the Persistent Memory guide.
+
+5. **Update any hard-coded paths** by searching scripts, README, and CI configs for old `~/Documents/...` references and replacing them with `~/Projects/DataSenderApp/...` or using relative paths.
+
+6. **Re-build and re-run tests with:**
+   ```bash
+   claude mcp run shell -- xcodebuild build -project DataSenderApp.xcodeproj -scheme DataSenderApp -destination "platform=iOS Simulator,name=iPhone 16,OS=18.5"
+   claude mcp run shell -- xcodebuild test -project DataSenderApp.xcodeproj -scheme DataSenderApp -destination "platform=iOS Simulator,name=iPhone 16,OS=18.5"
+   ```
+
 ## Testing
 
 ### Run Unit Tests
 
 ```bash
-# Using Xcode
-xcodebuild test -scheme DataSenderApp -destination 'platform=iOS Simulator,name=iPhone 15'
-
-# Or in Xcode IDE
-⌘U
+# Using xcodebuild
+xcodebuild test -scheme DataSenderApp -destination 'platform=iOS Simulator,name=iPhone 16,OS=18.5'
 ```
 
 ### Run UI Tests
 
 ```bash
-# Ensure simulator is running
-xcodebuild test -scheme DataSenderAppUITests -destination 'platform=iOS Simulator,name=iPhone 15'
+# Run UI tests
+xcodebuild test -scheme DataSenderApp -destination 'platform=iOS Simulator,name=iPhone 16,OS=18.5' -only-testing:DataSenderAppUITests
 ```
 
 ### Test Coverage
