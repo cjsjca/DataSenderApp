@@ -18,6 +18,7 @@ app.get('/health', (req, res) => {
 
 // Main Claude API endpoint
 app.post('/api/claude', (req, res) => {
+  console.log('=> got:', req.body);
   const { text } = req.body;
   
   // Validate input
