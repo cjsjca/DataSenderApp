@@ -1,5 +1,4 @@
 const express = require('express');
-const bodyParser = require('body-parser');
 const { spawn } = require('child_process');
 const path = require('path');
 
@@ -8,32 +7,32 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 // Middleware setup - MUST be before routes
-app.use(bodyParser.json());
-app.use(express.json()); 
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.json()); // Parse JSON request bodies
+app.use(express.static(path.join(__dirname, 'public'))); // Serve static files
 
 // Health check endpoint
 app.get('/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
-// Helper function to execute Claude with retry logic
-async function executeClaudeWithRetry(userPrompt, maxRetries = 3) {
-  const delays = [1000, 2000, 4000]; // Exponential backoff delays
+// Helper function to spawn Claude with retry logic
+async function spawnClaudeWithRetry(userPrompt, maxRetries = 3) {
+  const delays = [1000, 2000, 4000]; // Exponential backoff delays in ms
   
   for (let attempt = 0; attempt <= maxRetries; attempt++) {
     try {
       // Wait before retry (skip on first attempt)
       if (attempt > 0) {
         const delay = delays[attempt - 1];
-        console.log(`Retry attempt ${attempt}/${maxRetries} after ${delay}ms delay...`);
+        console.log(`Retrying after ${delay}ms (attempt ${attempt + 1}/${maxRetries + 1})...`);
         await new Promise(resolve => setTimeout(resolve, delay));
       }
       
-      // Execute Claude using spawn for better control
+      // Spawn Claude and get result
       const result = await new Promise((resolve, reject) => {
-        // Spawn Claude CLI with proper arguments
-        // Note: --dangerously-skip-permissions must come AFTER -p flag
+        console.log(`Spawning Claude CLI (attempt ${attempt + 1})...`);
+        
+        // Spawn the Claude CLI process
         const claude = spawn('/opt/homebrew/bin/claude', [
           '-p',
           userPrompt,
@@ -41,33 +40,28 @@ async function executeClaudeWithRetry(userPrompt, maxRetries = 3) {
           '--output-format',
           'json'
         ], {
-          env: process.env, // Inherit all environment variables
-          stdio: ['pipe', 'pipe', 'pipe'] // Properly pipe stdin, stdout, stderr
+          env: process.env, // Inherit all environment variables including HOME for ~/.claude
+          stdio: ['pipe', 'pipe', 'pipe'] // Pipe stdin, stdout, stderr
         });
         
-        let stdout = '';
-        let stderr = '';
-        let jsonBuffer = '';
+        let stdoutBuffer = '';
+        let stderrBuffer = '';
+        let hasResolved = false;
         
-        // Handle stdout data - buffer until we have complete JSON
+        // Handle stdout data
         claude.stdout.on('data', (chunk) => {
-          stdout += chunk.toString();
-          jsonBuffer += chunk.toString();
+          stdoutBuffer += chunk.toString();
           
-          // Try to parse complete JSON if we see closing brace
-          if (jsonBuffer.includes('}')) {
+          // Try to parse JSON if we have what looks like a complete object
+          const trimmed = stdoutBuffer.trim();
+          if (trimmed.startsWith('{') && trimmed.endsWith('}')) {
             try {
-              const lines = jsonBuffer.split('\n');
-              for (const line of lines) {
-                if (line.trim().startsWith('{') && line.trim().endsWith('}')) {
-                  const parsed = JSON.parse(line);
-                  console.log(`Attempt ${attempt + 1} - Parsed JSON response`);
-                  resolve({ stdout: line, stderr, parsed });
-                  return;
-                }
-              }
+              const parsed = JSON.parse(trimmed);
+              console.log('Successfully parsed JSON response');
+              hasResolved = true;
+              resolve({ json: parsed, stderr: stderrBuffer });
             } catch (e) {
-              // Not complete JSON yet, continue buffering
+              // Not valid JSON yet, keep buffering
             }
           }
         });
@@ -75,127 +69,126 @@ async function executeClaudeWithRetry(userPrompt, maxRetries = 3) {
         // Handle stderr data
         claude.stderr.on('data', (chunk) => {
           const data = chunk.toString();
-          stderr += data;
-          console.error(`Attempt ${attempt + 1} - stderr:`, data);
+          stderrBuffer += data;
+          console.error('Claude stderr:', data);
         });
         
         // Handle process errors
         claude.on('error', (error) => {
-          console.error(`Attempt ${attempt + 1} - spawn error:`, error);
-          reject(error);
+          console.error('Claude spawn error:', error);
+          if (!hasResolved) {
+            hasResolved = true;
+            reject(new Error(`Failed to spawn Claude: ${error.message}`));
+          }
         });
         
         // Handle process close
         claude.on('close', (code) => {
-          console.log(`Attempt ${attempt + 1} - Process exited with code ${code}`);
-          
-          // Check for overloaded error in stderr
-          if (stderr.toLowerCase().includes('overloaded')) {
-            reject(new Error('OVERLOADED'));
-            return;
-          }
-          
-          if (code !== 0) {
-            reject(new Error(`Claude exited with code ${code}: ${stderr}`));
-          } else if (stdout.trim()) {
-            // Try to parse the complete stdout as JSON
-            try {
-              const parsed = JSON.parse(stdout.trim());
-              resolve({ stdout: stdout.trim(), stderr, parsed });
-            } catch (e) {
-              // If not valid JSON, return raw output
-              resolve({ stdout, stderr });
+          if (!hasResolved) {
+            console.log(`Claude process exited with code ${code}`);
+            
+            // Check for overloaded error in stderr
+            if (stderrBuffer.toLowerCase().includes('overloaded')) {
+              reject(new Error('OVERLOADED'));
+            } else if (code !== 0) {
+              reject(new Error(`Claude exited with code ${code}: ${stderrBuffer || 'No error output'}`));
+            } else {
+              // Process succeeded but no JSON was captured
+              reject(new Error('No valid JSON response from Claude'));
             }
-          } else {
-            reject(new Error('No output from Claude'));
           }
         });
         
-        // Set a timeout to prevent indefinite hanging
+        // Timeout after 30 seconds to prevent hanging
         setTimeout(() => {
-          console.log(`Attempt ${attempt + 1} - Timeout reached, killing process`);
-          claude.kill('SIGTERM');
-          setTimeout(() => {
-            if (!claude.killed) {
-              claude.kill('SIGKILL');
-            }
-          }, 5000);
-        }, 30000); // 30 second timeout
+          if (!hasResolved) {
+            console.log('Timeout reached, terminating Claude process');
+            claude.kill('SIGTERM');
+            // Force kill after 5 more seconds if needed
+            setTimeout(() => {
+              if (!hasResolved) {
+                claude.kill('SIGKILL');
+              }
+            }, 5000);
+          }
+        }, 30000);
       });
       
-      // If we got here, command succeeded
+      // Success - return the result
       return result;
       
     } catch (error) {
-      // If it's not an overloaded error or we're out of retries, throw
-      if (error.message !== 'OVERLOADED' || attempt === maxRetries) {
+      // Check if it's an overloaded error
+      if (error.message === 'OVERLOADED') {
+        console.log('Claude API overloaded, will retry...');
+        // Continue to next retry unless we're out of attempts
+        if (attempt === maxRetries) {
+          throw new Error('SERVICE_OVERLOADED');
+        }
+      } else {
+        // Other errors - throw immediately
         throw error;
       }
-      // Otherwise, continue to next retry
     }
   }
 }
 
 // Main Claude API endpoint
 app.post('/api/claude', async (req, res) => {
-  console.log('=> got:', req.body);
+  console.log('Received request:', req.body);
   const { text } = req.body;
   
-  // Set request timeout to 40 seconds
-  req.setTimeout(40000);
-  
   // Validate input
-  if (!text) {
-    return res.status(400).json({ error: 'Missing text field' });
+  if (!text || typeof text !== 'string') {
+    return res.status(400).json({ error: 'Missing or invalid text field' });
   }
-
-  console.log('Executing Claude CLI with prompt:', text);
   
   try {
-    // Execute with retry logic
-    const result = await executeClaudeWithRetry(text);
+    // Call Claude with retry logic
+    const result = await spawnClaudeWithRetry(text);
     
-    // Extract completion from the response
-    let completion = '';
+    // Extract completion from the JSON response
+    const completion = result.json.result || 
+                      result.json.completion || 
+                      result.json.content || 
+                      result.json.output || 
+                      '';
     
-    if (result.parsed) {
-      // Successfully parsed JSON response
-      completion = result.parsed.result || result.parsed.completion || result.parsed.content || '';
-    } else if (result.stdout) {
-      // Fallback to raw output if JSON parsing failed
-      completion = result.stdout;
-    }
+    // Log successful completion
+    console.log('Successfully got completion from Claude');
     
-    console.log('Successfully got completion');
+    // Send response
     res.json({ completion });
     
   } catch (error) {
-    console.error('Final error after retries:', error);
+    console.error('Error calling Claude:', error);
     
-    // Check if it was an overloaded error
-    if (error.message === 'OVERLOADED' || error.message.toLowerCase().includes('overloaded')) {
-      return res.status(503).json({ 
+    // Handle specific error types
+    if (error.message === 'SERVICE_OVERLOADED') {
+      // Service overloaded after all retries
+      res.status(503).json({ 
         error: 'Service overloaded, please try again later' 
       });
+    } else {
+      // Other errors
+      res.status(500).json({ 
+        error: error.message || 'Failed to get response from Claude' 
+      });
     }
-    
-    // Other errors
-    return res.status(500).json({ 
-      error: error.message || 'Failed to execute Claude CLI' 
-    });
   }
 });
 
-// Error handling middleware
+// Global error handler
 app.use((err, req, res, next) => {
-  console.error('Server error:', err);
+  console.error('Unhandled error:', err);
   res.status(500).json({ error: 'Internal server error' });
 });
 
-// Start server - bind to localhost only for security
+// Start the server
 app.listen(PORT, '127.0.0.1', () => {
-  console.log(`Claude web interface running at http://localhost:${PORT}`);
-  console.log(`Health check available at http://localhost:${PORT}/health`);
-  console.log('Using subscription-authenticated Claude CLI from ~/.claude');
-  console.log('Make sure you have run "claude --dangerously-skip-permissions" once to accept prompts');
+  console.log(`\n🚀 Claude Web Interface Server`);
+  console.log(`📍 Running at: http://localhost:${PORT}`);
+  console.log(`🔧 Health check: http://localhost:${PORT}/health`);
+  console.log(`\n✅ Using subscription-authenticated Claude CLI from ~/.claude`);
+  console.log(`⚠️  Make sure you've run 'claude --dangerously-skip-permissions' once interactively\n`);
 });
