@@ -9,8 +9,7 @@ if ! command -v python3 &> /dev/null; then
     exit 1
 fi
 
-# Install required packages if needed
-pip3 install flask flask-cors > /dev/null 2>&1
+# No external packages needed - using Python standard library
 
 # Get local IP address
 LOCAL_IP=$(ifconfig | grep "inet " | grep -v 127.0.0.1 | awk '{print $2}' | head -1)
@@ -25,4 +24,4 @@ echo "Press Ctrl+C to stop the server"
 echo ""
 
 # Start the server
-python3 chat_server.py
+python3 simple_server.py
