@@ -1,151 +1,127 @@
-# Claude Web Interface for macOS
+# Claude Web Interface with MCP Support
 
-A lightweight web interface for interacting with Claude CLI on macOS. This native Node.js application provides a simple browser-based UI to send prompts to your locally authenticated Claude CLI session.
-
-## Why Native?
-
-Running natively on macOS (without virtualization or containers) provides:
-- **Minimal CPU usage** - No Linux VM overhead
-- **Less heat generation** - Your Mac stays cooler
-- **Direct CLI access** - Uses your existing Claude authentication
-- **Fast startup** - No container initialization
+A web interface for interacting with Claude CLI using the Model Context Protocol (MCP) for stateful sessions on macOS.
 
 ## Prerequisites
 
 - macOS (tested on macOS 12+)
 - Node.js 18+ (`brew install node`)
-- Claude CLI installed and authenticated
-- Either:
-  - An active Claude OAuth session (via `claude login`), or
-  - `ANTHROPIC_API_KEY` environment variable set
+- Claude CLI installed and authenticated with Pro/Max subscription
+- No raw API keys or Docker required
 
-## Installation
+## Setup Instructions
 
-1. Clone or download this project
-2. Navigate to the project directory:
-   ```bash
-   cd my-claude-web
-   ```
-3. Install dependencies:
-   ```bash
-   npm install
-   ```
+### 1. Start the MCP Server
 
-## Running the Application
+First, start the MCP server that will handle stateful Claude sessions:
 
-### Option 1: Direct execution (foreground)
+```bash
+claude mcp serve --transport http --port 9090 --dangerously-skip-permissions
+```
+
+Keep this terminal open - the MCP server needs to stay running.
+
+### 2. Register MCP Endpoints
+
+In a new terminal, register two endpoints for different purposes:
+
+```bash
+# Register design-server endpoint for architectural/planning discussions
+claude mcp add --transport http design-server http://127.0.0.1:9090
+
+# Register exec-server endpoint for code execution tasks
+claude mcp add --transport http exec-server http://127.0.0.1:9090
+```
+
+### 3. Install Dependencies
+
+Navigate to the project directory and install Node.js dependencies:
+
+```bash
+cd my-claude-web
+npm install
+```
+
+### 4. Start the Web Server
 
 ```bash
 npm start
 ```
 
-Then open http://localhost:3000 in your browser.
-
-### Option 2: With environment variable
-
-```bash
-ANTHROPIC_API_KEY="your-api-key" npm start
-```
-
-### Option 3: Background service with PM2
-
-1. Install PM2 globally:
-   ```bash
-   npm install -g pm2
-   ```
-
-2. Start the service:
-   ```bash
-   pm2 start ecosystem.config.js
-   ```
-
-3. Manage the service:
-   ```bash
-   pm2 status        # Check status
-   pm2 logs          # View logs
-   pm2 stop claude-web    # Stop service
-   pm2 restart claude-web # Restart service
-   pm2 delete claude-web  # Remove from PM2
-   ```
-
-4. Auto-start on boot (optional):
-   ```bash
-   pm2 startup
-   pm2 save
-   ```
-
-### Option 4: Using launchd (macOS native)
-
-Create a plist file at `~/Library/LaunchAgents/com.claude.web.plist`:
-
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<plist version="1.0">
-<dict>
-    <key>Label</key>
-    <string>com.claude.web</string>
-    <key>ProgramArguments</key>
-    <array>
-        <string>/usr/local/bin/node</string>
-        <string>/path/to/my-claude-web/server.js</string>
-    </array>
-    <key>RunAtLoad</key>
-    <true/>
-    <key>KeepAlive</key>
-    <true/>
-    <key>WorkingDirectory</key>
-    <string>/path/to/my-claude-web</string>
-</dict>
-</plist>
-```
-
-Then load it:
-```bash
-launchctl load ~/Library/LaunchAgents/com.claude.web.plist
-```
+The server will start at http://localhost:3000
 
 ## Usage
 
 1. Open http://localhost:3000 in your browser
 2. Type or paste your prompt in the text area
 3. Click "Send to Claude" or press Enter
-4. View the response below
+4. View the response with stateful context maintained across requests
+
+## Architecture
+
+- **MCP Server**: Maintains stateful Claude sessions at port 9090
+- **Web Server**: Node.js/Express server that communicates with MCP
+- **Frontend**: Simple HTML interface for sending prompts
+
+## How MCP Works
+
+The Model Context Protocol allows:
+- **Stateful Sessions**: Context is maintained between requests
+- **Multiple Endpoints**: Different servers for different purposes (design vs execution)
+- **No API Keys**: Uses your existing Claude subscription authentication
 
 ## Troubleshooting
 
-### "Claude CLI not found"
-- Ensure Claude is installed: `which claude`
-- Add Claude to your PATH if needed
+### "MCP server not found"
+- Ensure the MCP server is running: `claude mcp serve --transport http --port 9090 --dangerously-skip-permissions`
+- Check that port 9090 is not in use: `lsof -i :9090`
+
+### "Endpoint not registered"
+- Re-register the endpoints using the commands in step 2
+- Verify endpoints are registered: `claude mcp list`
 
 ### "Authentication required"
-- Run `claude login` to authenticate via browser
-- Or set `ANTHROPIC_API_KEY` environment variable
+- Ensure you're logged into Claude CLI: `claude login`
+- The `--dangerously-skip-permissions` flag should bypass permission prompts
 
 ### Port already in use
-- Change the port: `PORT=3001 npm start`
-- Or kill the existing process: `lsof -ti:3000 | xargs kill`
+- Web server: Change port with `PORT=3001 npm start`
+- MCP server: Use a different port in both serve and add commands
 
-## Configuration
+## Advanced Usage
 
-- **Port**: Set via `PORT` environment variable (default: 3000)
-- **Timeout**: Requests timeout after 60 seconds
-- **Security**: Server only listens on localhost (127.0.0.1)
+### Using Different Endpoints
 
-## Development
+By default, the web interface uses the `design-server` endpoint. To use `exec-server` instead, modify the `MCP_ENDPOINT` in server.js:
 
-For development with auto-reload:
+```javascript
+const MCP_ENDPOINT = 'exec-server'; // Change from 'design-server'
+```
+
+### Running as a Background Service
+
+To run the web server as a background service:
+
 ```bash
-npm install -g nodemon
-nodemon server.js
+# Install PM2 globally
+npm install -g pm2
+
+# Start the service
+pm2 start server.js --name claude-web
+
+# View logs
+pm2 logs claude-web
+
+# Stop the service
+pm2 stop claude-web
 ```
 
 ## Notes
 
-- The server executes Claude CLI for each request (stateless)
-- Large responses may take time - be patient
-- For production use, consider adding authentication
-- Logs are written to console (stdout/stderr)
+- The MCP server must be running before starting the web server
+- Sessions are stateful - Claude remembers previous messages in the conversation
+- For production use, consider adding authentication to the web interface
+- The `--dangerously-skip-permissions` flag is required for headless operation
 
 ## License
 
