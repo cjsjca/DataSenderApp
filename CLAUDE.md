@@ -9,6 +9,12 @@ This Mac + Claude Code CLI setup is a proof-of-concept for an autonomous AI agen
 
 See AGENT_VISION.md for complete autonomous agent roadmap.
 
+## Key Insights & Evolution
+IMPORTANT: Critical realizations are captured in INSIGHTS_LOG.md
+- Documents "aha moments" that shape project direction
+- Captures relationship between human-AI collaboration insights
+- Tracks evolution of understanding over time
+
 ## Auto-Commit System
 This project includes an automatic commit system (`auto_commit.sh`) that:
 - **Watches for file changes** and commits after 5 seconds of inactivity
