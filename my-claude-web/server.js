@@ -30,26 +30,46 @@ async function executeClaudeWithRetry(command, options, maxRetries = 3) {
         await new Promise(resolve => setTimeout(resolve, delay));
       }
       
-      // Execute command
+      // Execute command using spawn for better control
       const result = await new Promise((resolve, reject) => {
-        exec(command, options, (error, stdout, stderr) => {
-          console.log(`Attempt ${attempt + 1} - CLI err:`, error, 'stderr:', stderr, 'stdout:', stdout);
+        const { spawn } = require('child_process');
+        const args = ['--dangerously-skip-permissions', '-p', command.match(/"([^"]*)"/)[1], '--output-format', 'json'];
+        const claude = spawn('/opt/homebrew/bin/claude', args, options);
+        
+        let stdout = '';
+        let stderr = '';
+        
+        claude.stdout.on('data', (data) => {
+          stdout += data.toString();
+        });
+        
+        claude.stderr.on('data', (data) => {
+          stderr += data.toString();
+        });
+        
+        claude.on('close', (code) => {
+          console.log(`Attempt ${attempt + 1} - Exit code: ${code}, stderr: ${stderr}, stdout: ${stdout}`);
           
           // Check for overloaded error
-          if (error || stderr) {
-            const errorMessage = (error?.message || '') + (stderr || '');
+          if (code !== 0 || stderr) {
+            const errorMessage = stderr || '';
             if (errorMessage.toLowerCase().includes('overloaded')) {
               reject(new Error('OVERLOADED'));
               return;
             }
           }
           
-          if (error) {
-            reject(error);
+          if (code !== 0) {
+            reject(new Error(`Claude exited with code ${code}`));
           } else {
             resolve({ stdout, stderr });
           }
         });
+        
+        // Kill the process after 20 seconds if it hasn't completed
+        setTimeout(() => {
+          claude.kill('SIGTERM');
+        }, 20000);
       });
       
       // If we got here, command succeeded
