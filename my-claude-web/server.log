@@ -6,3 +6,12 @@
 ✅ Using subscription-authenticated Claude CLI from ~/.claude
 ⚠️  Make sure you've run 'claude --dangerously-skip-permissions' once interactively
 
+Received request: { text: 'Hello' }
+Spawning Claude CLI (attempt 1)...
+Timeout reached, terminating Claude process
+Claude process exited with code 143
+Error calling Claude: Error: Claude exited with code 143: No error output
+    at ChildProcess.<anonymous> (/Users/loaner/Projects/DataSenderApp/my-claude-web/server.js:94:22)
+    at ChildProcess.emit (node:events:507:28)
+    at maybeClose (node:internal/child_process:1101:16)
+    at ChildProcess._handle.onexit (node:internal/child_process:305:5)
