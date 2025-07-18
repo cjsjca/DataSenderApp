@@ -1,0 +1,8 @@
+
+🚀 Claude Web Interface Server
+📍 Running at: http://localhost:3000
+🔧 Health check: http://localhost:3000/health
+
+✅ Using subscription-authenticated Claude CLI from ~/.claude
+⚠️  Make sure you've run 'claude --dangerously-skip-permissions' once interactively
+
