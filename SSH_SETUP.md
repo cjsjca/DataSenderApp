@@ -1,9 +1,22 @@
-# SSH Setup for Termius
+# SSH Setup for Termius - DataSenderApp
+
+Complete guide for accessing your Mac from iPhone, including Claude CLI with subscription authentication.
 
 ## Your Mac's Details
 - **IP Address**: 192.168.0.116
 - **Username**: loaner
 - **Project Path**: /Users/loaner/Projects/DataSenderApp
+
+## Prerequisites
+
+### On Mac
+```bash
+# Install required tools
+brew install tmux fswatch
+
+# Verify Claude CLI is installed
+claude --version
+```
 
 ## Enable SSH on Mac
 
