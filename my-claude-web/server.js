@@ -85,10 +85,10 @@ app.post('/api/claude', async (req, res) => {
   // Uses existing authenticated CLI session from ~/.claude
   const command = `claude -p "${escapedText}" --output-format json`;
   
-  // Set execution timeout to 25 seconds (less than request timeout)
+  // Set execution options (no timeout for debugging)
   const options = {
-    timeout: 25000,
-    maxBuffer: 1024 * 1024 * 10 // 10MB buffer
+    maxBuffer: 1024 * 1024 * 10, // 10MB buffer
+    env: { ...process.env, PATH: process.env.PATH } // Ensure PATH is inherited
   };
   
   console.log('Executing command:', command);
