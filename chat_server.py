@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-Chat bridge server - Connects web browser to Claude CLI
-Handles real-time bidirectional communication
+Backend server for DataSenderApp web application
+Bridges frontend to Claude CLI via subprocess with real-time updates
 """
 
 from flask import Flask, request, jsonify, Response
